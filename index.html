@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verb Master - Irregular Past Verbs Practice</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .hidden { display: none; }
+    .modal-open { overflow: hidden; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="app"></div>
+
+  <script>
+    // ============ DATA ============
+    const irregularVerbs = [
+      { base: 'be', pastSimple: 'was/were', pastParticiple: 'been', emoji: '🧍', isRegular: false, commonRank: 1, level: 'A1' },
+      { base: 'have', pastSimple: 'had', pastParticiple: 'had', emoji: '🤲', isRegular: false, commonRank: 2, level: 'A1' },
+      { base: 'do', pastSimple: 'did', pastParticiple: 'done', emoji: '✔️', isRegular: false, commonRank: 3, level: 'A1' },
+      { base: 'say', pastSimple: 'said', pastParticiple: 'said', emoji: '💬', isRegular: false, commonRank: 4, level: 'A1' },
+      { base: 'go', pastSimple: 'went', pastParticiple: 'gone', emoji: '🚀', isRegular: false, commonRank: 5, level: 'A1' },
+      { base: 'get', pastSimple: 'got', pastParticiple: 'got/gotten', emoji: '🎁', isRegular: false, commonRank: 6, level: 'A1' },
+      { base: 'make', pastSimple: 'made', pastParticiple: 'made', emoji: '🛠️', isRegular: false, commonRank: 7, level: 'A1' },
+      { base: 'know', pastSimple: 'knew', pastParticiple: 'known', emoji: '🧠', isRegular: false, commonRank: 8, level: 'A1' },
+      { base: 'think', pastSimple: 'thought', pastParticiple: 'thought', emoji: '💡', isRegular: false, commonRank: 9, level: 'A1' },
+      { base: 'take', pastSimple: 'took', pastParticiple: 'taken', emoji: '🤏', isRegular: false, commonRank: 10, level: 'A1' },
+      { base: 'see', pastSimple: 'saw', pastParticiple: 'seen', emoji: '👁️', isRegular: false, commonRank: 11, level: 'A1' },
+      { base: 'come', pastSimple: 'came', pastParticiple: 'come', emoji: '🚶', isRegular: false, commonRank: 12, level: 'A1' },
+      { base: 'give', pastSimple: 'gave', pastParticiple: 'given', emoji: '🎁', isRegular: false, commonRank: 13, level: 'A2' },
+      { base: 'find', pastSimple: 'found', pastParticiple: 'found', emoji: '🔍', isRegular: false, commonRank: 14, level: 'A1' },
+      { base: 'tell', pastSimple: 'told', pastParticiple: 'told', emoji: '📣', isRegular: false, commonRank: 15, level: 'A1' },
+      { base: 'become', pastSimple: 'became', pastParticiple: 'become', emoji: '🦋', isRegular: false, commonRank: 16, level: 'A2' },
+      { base: 'leave', pastSimple: 'left', pastParticiple: 'left', emoji: '🚪', isRegular: false, commonRank: 17, level: 'A2' },
+      { base: 'feel', pastSimple: 'felt', pastParticiple: 'felt', emoji: '💭', isRegular: false, commonRank: 18, level: 'A2' },
+      { base: 'bring', pastSimple: 'brought', pastParticiple: 'brought', emoji: '📦', isRegular: false, commonRank: 19, level: 'A2' },
+      { base: 'begin', pastSimple: 'began', pastParticiple: 'begun', emoji: '▶️', isRegular: false, commonRank: 20, level: 'A2' },
+      { base: 'keep', pastSimple: 'kept', pastParticiple: 'kept', emoji: '🔐', isRegular: false, commonRank: 21, level: 'A2' },
+      { base: 'hold', pastSimple: 'held', pastParticiple: 'held', emoji: '✊', isRegular: false, commonRank: 22, level: 'B1' },
+      { base: 'write', pastSimple: 'wrote', pastParticiple: 'written', emoji: '✍️', isRegular: false, commonRank: 23, level: 'A1' },
+      { base: 'stand', pastSimple: 'stood', pastParticiple: 'stood', emoji: '🧍', isRegular: false, commonRank: 24, level: 'A2' },
+      { base: 'hear', pastSimple: 'heard', pastParticiple: 'heard', emoji: '👂', isRegular: false, commonRank: 25, level: 'A2' },
+      { base: 'let', pastSimple: 'let', pastParticiple: 'let', emoji: '🤝', isRegular: false, commonRank: 26, level: 'A2' },
+      { base: 'mean', pastSimple: 'meant', pastParticiple: 'meant', emoji: '📝', isRegular: false, commonRank: 27, level: 'A2' },
+      { base: 'put', pastSimple: 'put', pastParticiple: 'put', emoji: '📥', isRegular: false, commonRank: 28, level: 'A1' },
+      { base: 'show', pastSimple: 'showed', pastParticiple: 'shown', emoji: '👉', isRegular: false, commonRank: 29, level: 'A2' },
+      { base: 'speak', pastSimple: 'spoke', pastParticiple: 'spoken', emoji: '🗣️', isRegular: false, commonRank: 30, level: 'A2' },
+      { base: 'run', pastSimple: 'ran', pastParticiple: 'run', emoji: '🏃', isRegular: false, commonRank: 31, level: 'A1' },
+      { base: 'read', pastSimple: 'read', pastParticiple: 'read', emoji: '📖', isRegular: false, commonRank: 32, level: 'A1' },
+      { base: 'sit', pastSimple: 'sat', pastParticiple: 'sat', emoji: '💺', isRegular: false, commonRank: 33, level: 'A1' },
+      { base: 'pay', pastSimple: 'paid', pastParticiple: 'paid', emoji: '💰', isRegular: false, commonRank: 34, level: 'A2' },
+      { base: 'meet', pastSimple: 'met', pastParticiple: 'met', emoji: '🤝', isRegular: false, commonRank: 35, level: 'A1' },
+      { base: 'lose', pastSimple: 'lost', pastParticiple: 'lost', emoji: '❌', isRegular: false, commonRank: 36, level: 'A2' },
+      { base: 'buy', pastSimple: 'bought', pastParticiple: 'bought', emoji: '🛒', isRegular: false, commonRank: 37, level: 'A1' },
+      { base: 'send', pastSimple: 'sent', pastParticiple: 'sent', emoji: '📧', isRegular: false, commonRank: 38, level: 'A2' },
+      { base: 'break', pastSimple: 'broke', pastParticiple: 'broken', emoji: '💔', isRegular: false, commonRank: 39, level: 'A2' },
+      { base: 'build', pastSimple: 'built', pastParticiple: 'built', emoji: '🏗️', isRegular: false, commonRank: 40, level: 'B1' },
+      { base: 'understand', pastSimple: 'understood', pastParticiple: 'understood', emoji: '💡', isRegular: false, commonRank: 41, level: 'A2' },
+      { base: 'spend', pastSimple: 'spent', pastParticiple: 'spent', emoji: '💸', isRegular: false, commonRank: 42, level: 'A2' },
+      { base: 'fall', pastSimple: 'fell', pastParticiple: 'fallen', emoji: '🍂', isRegular: false, commonRank: 43, level: 'A2' },
+      { base: 'cut', pastSimple: 'cut', pastParticiple: 'cut', emoji: '✂️', isRegular: false, commonRank: 44, level: 'A2' },
+      { base: 'grow', pastSimple: 'grew', pastParticiple: 'grown', emoji: '🌱', isRegular: false, commonRank: 45, level: 'A2' },
+      { base: 'win', pastSimple: 'won', pastParticiple: 'won', emoji: '🏆', isRegular: false, commonRank: 46, level: 'A2' },
+      { base: 'teach', pastSimple: 'taught', pastParticiple: 'taught', emoji: '👨‍🏫', isRegular: false, commonRank: 47, level: 'A2' },
+      { base: 'catch', pastSimple: 'caught', pastParticiple: 'caught', emoji: '🤾', isRegular: false, commonRank: 48, level: 'A2' },
+      { base: 'choose', pastSimple: 'chose', pastParticiple: 'chosen', emoji: '✅', isRegular: false, commonRank: 49, level: 'B1' },
+      { base: 'sell', pastSimple: 'sold', pastParticiple: 'sold', emoji: '💵', isRegular: false, commonRank: 50, level: 'B1' },
+      { base: 'eat', pastSimple: 'ate', pastParticiple: 'eaten', emoji: '🍽️', isRegular: false, level: 'A1' },
+      { base: 'drink', pastSimple: 'drank', pastParticiple: 'drunk', emoji: '🥤', isRegular: false, level: 'A1' },
+      { base: 'drive', pastSimple: 'drove', pastParticiple: 'driven', emoji: '🚗', isRegular: false, level: 'A2' },
+      { base: 'fly', pastSimple: 'flew', pastParticiple: 'flown', emoji: '✈️', isRegular: false, level: 'A2' },
+      { base: 'forget', pastSimple: 'forgot', pastParticiple: 'forgotten', emoji: '🤔', isRegular: false, level: 'A2' },
+      { base: 'sleep', pastSimple: 'slept', pastParticiple: 'slept', emoji: '😴', isRegular: false, level: 'A1' },
+      { base: 'sing', pastSimple: 'sang', pastParticiple: 'sung', emoji: '🎤', isRegular: false, level: 'A2' },
+      { base: 'swim', pastSimple: 'swam', pastParticiple: 'swum', emoji: '🏊', isRegular: false, level: 'A2' },
+      { base: 'wake', pastSimple: 'woke', pastParticiple: 'woken', emoji: '⏰', isRegular: false, level: 'A2' },
+      { base: 'wear', pastSimple: 'wore', pastParticiple: 'worn', emoji: '👕', isRegular: false, level: 'A2' },
+      { base: 'hide', pastSimple: 'hid', pastParticiple: 'hidden', emoji: '🫣', isRegular: false, level: 'B2' },
+      { base: 'draw', pastSimple: 'drew', pastParticiple: 'drawn', emoji: '✏️', isRegular: false, level: 'B2' },
+      { base: 'shoot', pastSimple: 'shot', pastParticiple: 'shot', emoji: '🎯', isRegular: false, level: 'B2' },
+      { base: 'ride', pastSimple: 'rode', pastParticiple: 'ridden', emoji: '🚴', isRegular: false, level: 'B2' },
+      { base: 'throw', pastSimple: 'threw', pastParticiple: 'thrown', emoji: '⚾', isRegular: false, level: 'B2' },
+      { base: 'slide', pastSimple: 'slid', pastParticiple: 'slid', emoji: '🛝', isRegular: false, level: 'B2' },
+      { base: 'steal', pastSimple: 'stole', pastParticiple: 'stolen', emoji: '🦹', isRegular: false, level: 'B2' },
+      { base: 'knit', pastSimple: 'knit/knitted', pastParticiple: 'knit/knitted', emoji: '🧶', isRegular: false, level: 'B2' },
+      { base: 'shine', pastSimple: 'shone', pastParticiple: 'shone', emoji: '✨', isRegular: false, level: 'B2' },
+      { base: 'sweep', pastSimple: 'swept', pastParticiple: 'swept', emoji: '🧹', isRegular: false, level: 'B2' },
+      { base: 'sink', pastSimple: 'sank', pastParticiple: 'sunk', emoji: '🚢', isRegular: false, level: 'B2' },
+    ];
+
+    // ============ STATE ============
+    let state = {
+      mode: 'search',
+      searchTerm: '',
+      searchResult: null,
+      searchHistory: JSON.parse(localStorage.getItem('verbSearchHistory')) || [],
+      gameVerbs: [],
+      currentVerbIndex: 0,
+      userAnswer: '',
+      feedback: null,
+      score: 0,
+      gameStarted: false,
+      gameResults: null,
+      performanceData: JSON.parse(localStorage.getItem('verbPerformanceData')) || {
+        verbStats: {},
+        gameNumber: 0,
+        wrongAnswersQueue: [],
+      },
+      settings: JSON.parse(localStorage.getItem('verbGameSettings')) || {
+        practiceMode: 'mix',
+        verbSet: 'all',
+      },
+      showSettings: false,
+      showReviewModal: false,
+      showStatsModal: null,
+    };
+
+    // ============ UTILS ============
+    function findVerbByAnyForm(searchTerm) {
+      const normalized = searchTerm.toLowerCase().trim();
+      return irregularVerbs.find(verb => {
+        const base = verb.base.toLowerCase() === normalized;
+        const past = verb.pastSimple.toLowerCase().split('/').some(f => f.trim() === normalized);
+        const participle = verb.pastParticiple.toLowerCase().split('/').some(f => f.trim() === normalized);
+        return base || past || participle;
+      });
+    }
+
+    function getFormType(verb, searchTerm) {
+      const normalized = searchTerm.toLowerCase().trim();
+      if (verb.base.toLowerCase() === normalized) return 'infinitive';
+      if (verb.pastSimple.toLowerCase().split('/').some(f => f.trim() === normalized)) return 'pastSimple';
+      if (verb.pastParticiple.toLowerCase().split('/').some(f => f.trim() === normalized)) return 'pastParticiple';
+      return 'infinitive';
+    }
+
+    function getTop50() {
+      return irregularVerbs.filter(v => v.commonRank && v.commonRank <= 50);
+    }
+
+    function saveState() {
+      localStorage.setItem('verbSearchHistory', JSON.stringify(state.searchHistory));
+      localStorage.setItem('verbPerformanceData', JSON.stringify(state.performanceData));
+      localStorage.setItem('verbGameSettings', JSON.stringify(state.settings));
+    }
+
+    // ============ EVENTS ============
+    function handleSearch() {
+      const term = document.getElementById('searchInput')?.value || '';
+      if (!term.trim()) return;
+
+      const verb = findVerbByAnyForm(term);
+      if (verb) {
+        state.searchResult = { ...verb, searchedFormType: getFormType(verb, term) };
+        const idx = state.searchHistory.findIndex(h => h.base === verb.base);
+        if (idx > -1) {
+          state.searchHistory[idx].count += 1;
+          state.searchHistory[idx].lastSearched = new Date().toISOString();
+        } else {
+          state.searchHistory.push({ ...verb, count: 1, lastSearched: new Date().toISOString() });
+        }
+        state.searchHistory.sort((a, b) => {
+          if (b.count !== a.count) return b.count - a.count;
+          return new Date(b.lastSearched) - new Date(a.lastSearched);
+        });
+      } else {
+        state.searchResult = { notFound: true };
+      }
+      saveState();
+      render();
+    }
+
+    function startGame() {
+      const top50 = getTop50();
+      const available = state.settings.verbSet === 'top50' ? top50 : irregularVerbs;
+      const shuffled = [...available].sort(() => Math.random() - 0.5);
+      const selected = shuffled.slice(0, 10);
+
+      state.gameVerbs = selected.map(v => ({
+        ...v,
+        askingFor: state.settings.practiceMode === 'mix' ? 
+          (Math.random() > 0.5 ? 'pastSimple' : 'pastParticiple') :
+          state.settings.practiceMode
+      }));
+      state.currentVerbIndex = 0;
+      state.score = 0;
+      state.userAnswer = '';
+      state.feedback = null;
+      state.gameStarted = true;
+      state.gameResults = null;
+      state.performanceData.gameNumber += 1;
+      saveState();
+      render();
+      setTimeout(() => document.getElementById('answerInput')?.focus(), 100);
+    }
+
+    function checkAnswer() {
+      const answer = (document.getElementById('answerInput')?.value || '').trim();
+      if (!answer) return;
+
+      const verb = state.gameVerbs[state.currentVerbIndex];
+      const correct = verb[verb.askingFor].toLowerCase().split('/').map(f => f.trim());
+      const isCorrect = correct.some(f => f === answer.toLowerCase());
+
+      state.feedback = {
+        isCorrect,
+        userAnswer: answer,
+        correctAnswer: verb[verb.askingFor],
+        askedFor: verb.askingFor
+      };
+
+      if (isCorrect) state.score += 1;
+
+      if (!state.performanceData.verbStats[verb.base]) {
+        state.performanceData.verbStats[verb.base] = { correct: 0, incorrect: 0 };
+      }
+      if (isCorrect) {
+        state.performanceData.verbStats[verb.base].correct += 1;
+      } else {
+        state.performanceData.verbStats[verb.base].incorrect += 1;
+        if (!state.performanceData.wrongAnswersQueue.includes(verb.base)) {
+          state.performanceData.wrongAnswersQueue.push(verb.base);
+        }
+      }
+
+      if (!state.gameResults) {
+        state.gameResults = { score: isCorrect ? 1 : 0, total: 10, answers: [{ verb, userAnswer: answer, askedFor: verb.askingFor }] };
+      } else {
+        state.gameResults.score += isCorrect ? 1 : 0;
+        state.gameResults.answers.push({ verb, userAnswer: answer, askedFor: verb.askingFor });
+      }
+
+      saveState();
+      render();
+    }
+
+    function nextQuestion() {
+      if (state.currentVerbIndex + 1 >= 10) {
+        state.gameStarted = false;
+      } else {
+        state.currentVerbIndex += 1;
+        state.userAnswer = '';
+        state.feedback = null;
+      }
+      saveState();
+      render();
+      setTimeout(() => document.getElementById('answerInput')?.focus(), 100);
+    }
+
+    // ============ RENDERING ============
+    function render() {
+      const app = document.getElementById('app');
+      
+      let html = `
+        <div class="min-h-screen bg-gray-50 flex flex-col">
+          <header class="border-b border-gray-200 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="flex items-center justify-between h-16 sm:h-20">
+                <div class="flex items-center space-x-3">
+                  <div class="text-2xl sm:text-3xl">📚</div>
+                  <div>
+                    <h1 class="text-lg sm:text-xl font-semibold text-gray-900 tracking-tight">Verb Master</h1>
+                    <p class="text-xs text-gray-500 hidden sm:block">Irregular Past Verbs Practice</p>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <button onclick="state.mode='search';state.showSettings=false;render()" class="px-4 py-2 text-sm sm:text-base rounded-md transition-all ${state.mode === 'search' ? 'bg-blue-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}">Search</button>
+                  <button onclick="state.mode='game';state.showSettings=false;render()" class="px-4 py-2 text-sm sm:text-base rounded-md transition-all ${state.mode === 'game' ? 'bg-blue-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}">Game</button>
+                </div>
+              </div>
+            </div>
+          </header>
+          <main class="flex-1">
+            ${state.mode === 'search' ? renderSearch() : renderGame()}
+          </main>
+          <footer class="border-t border-gray-200 bg-white py-4 mt-8">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+              <p class="text-center text-sm text-gray-600">
+                © ${new Date().getFullYear()} All rights reserved by 
+                <a href="https://www.instagram.com/mariy.bandura" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-700 font-medium transition-colors hover:underline">Mariya Bandura</a>
+              </p>
+            </div>
+          </footer>
+        </div>
+        ${state.showReviewModal && state.gameResults ? renderReviewModal() : ''}
+        ${state.showStatsModal ? renderStatsModal() : ''}
+      `;
+
+      app.innerHTML = html;
+    }
+
+    function renderSearch() {
+      return `
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-4xl">
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-8 mb-8">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-6 text-gray-900">Search Verb</h2>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="relative flex-1">
+                <input type="text" id="searchInput" placeholder="Enter any verb form (e.g., go, went, gone)" class="w-full pl-10 h-12 text-base border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="if(event.key==='Enter') handleSearch()">
+              </div>
+              <button onclick="handleSearch()" class="h-12 px-6 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">Search</button>
+            </div>
+            ${state.searchResult ? (state.searchResult.notFound ? 
+              `<div class="mt-6 bg-red-50 text-red-600 p-4 rounded-lg text-center">Irregular verb not found.</div>` :
+              `<div class="mt-6 bg-blue-50 p-6 rounded-lg text-center">
+                <div class="text-6xl mb-4">${state.searchResult.emoji}</div>
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-600">Infinitive (1st form):</span>
+                    <span class="text-lg font-semibold text-gray-900">${state.searchResult.base}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-600">Past Simple (2nd form):</span>
+                    <span class="text-lg font-semibold text-gray-900">${state.searchResult.pastSimple}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-600">Past Participle (3rd form):</span>
+                    <span class="text-lg font-semibold text-gray-900">${state.searchResult.pastParticiple}</span>
+                  </div>
+                </div>
+              </div>`) : ''}
+          </div>
+          ${state.searchHistory.length > 0 ? `
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-8">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">Search History</h2>
+                <button onclick="state.searchHistory=[];saveState();render()" class="text-gray-500 hover:text-red-600 transition-all flex items-center text-sm">Clear</button>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                ${state.searchHistory.map(v => `
+                  <div class="bg-gray-50 p-4 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center space-x-3">
+                        <span class="text-3xl">${v.emoji}</span>
+                        <span class="font-semibold text-gray-900">${v.base}</span>
+                      </div>
+                      <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">${v.count}x</span>
+                    </div>
+                    <div class="text-sm text-gray-600">Past: <span class="text-blue-600 font-medium">${v.pastSimple}</span></div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function renderGame() {
+      if (!state.gameStarted) {
+        const totalCorrect = Object.values(state.performanceData.verbStats).reduce((s, st) => s + st.correct, 0);
+        const totalIncorrect = Object.values(state.performanceData.verbStats).reduce((s, st) => s + st.incorrect, 0);
+        const accuracy = (totalCorrect + totalIncorrect) > 0 ? Math.round((totalCorrect / (totalCorrect + totalIncorrect)) * 100) : 0;
+
+        return `
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-2xl">
+            ${!state.showSettings ? `
+              <button onclick="state.showSettings=true;render()" class="mb-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all text-sm flex items-center">⚙️ Game Settings</button>
+            ` : `
+              <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-gray-900">Game Settings</h3>
+                  <button onclick="state.showSettings=false;render()" class="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+                <div class="mb-6">
+                  <label class="text-sm font-medium text-gray-900 mb-3 block">Practice Mode</label>
+                  <div class="space-y-2">
+                    ${[
+                      { value: 'mix', label: 'Mixed (2nd & 3rd forms)', desc: 'Random selection' },
+                      { value: 'pastSimple', label: 'Past Simple (2nd form)', desc: 'Example: I went yesterday' },
+                      { value: 'pastParticiple', label: 'Past Participle (3rd form)', desc: 'Example: I have gone' }
+                    ].map(opt => `
+                      <button onclick="state.settings.practiceMode='${opt.value}';saveState();render()" class="w-full text-left p-3 rounded-lg border transition-all ${state.settings.practiceMode === opt.value ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:bg-gray-50'}">
+                        <div class="font-medium text-gray-900 text-sm">${opt.label}</div>
+                        <div class="text-xs text-gray-500 mt-1">${opt.desc}</div>
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+                <div>
+                  <label class="text-sm font-medium text-gray-900 mb-3 block">Verb Selection</label>
+                  <div class="space-y-2">
+                    ${[
+                      { value: 'top50', label: '50 Most Common Verbs', desc: 'Focus on essential vocabulary' },
+                      { value: 'all', label: 'All Irregular Verbs (250+)', desc: 'Comprehensive practice' }
+                    ].map(opt => `
+                      <button onclick="state.settings.verbSet='${opt.value}';saveState();render()" class="w-full text-left p-3 rounded-lg border transition-all ${state.settings.verbSet === opt.value ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:bg-gray-50'}">
+                        <div class="font-medium text-gray-900 text-sm">${opt.label}</div>
+                        <div class="text-xs text-gray-500 mt-1">${opt.desc}</div>
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            `}
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8 sm:p-12 text-center">
+              ${state.currentVerbIndex === 0 ? `
+                <div class="text-6xl mb-4">🏆</div>
+                <h2 class="text-2xl sm:text-3xl font-semibold mb-3 text-gray-900">Ready to Play?</h2>
+                <p class="text-gray-600 text-base sm:text-lg max-w-md mx-auto mb-8">You'll see an emoji and the infinitive (1st form) of a verb. Guess either the Past Simple (2nd form) or Past Participle (3rd form) - we'll tell you which one!</p>
+                ${(totalCorrect > 0 || totalIncorrect > 0) ? `
+                  <div class="mb-6 p-6 bg-gray-50 rounded-lg">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Your Stats</h3>
+                    <div class="grid grid-cols-3 gap-4 text-sm mb-4">
+                      <button onclick="state.showStatsModal='correct';render()" class="p-3 bg-white rounded-lg hover:shadow-md transition-all cursor-pointer">
+                        <div class="text-2xl font-bold text-green-600">${totalCorrect}</div>
+                        <div class="text-xs text-gray-600">Correct</div>
+                      </button>
+                      <button onclick="state.showStatsModal='incorrect';render()" class="p-3 bg-white rounded-lg hover:shadow-md transition-all cursor-pointer">
+                        <div class="text-2xl font-bold text-red-600">${totalIncorrect}</div>
+                        <div class="text-xs text-gray-600">Incorrect</div>
+                      </button>
+                      <div class="p-3 bg-white rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600">${state.performanceData.gameNumber}</div>
+                        <div class="text-xs text-gray-600">Games</div>
+                      </div>
+                    </div>
+                    ${state.performanceData.wrongAnswersQueue.length > 0 ? `
+                      <button onclick="state.showStatsModal='toReview';render()" class="flex items-center justify-center space-x-2 mx-auto text-blue-600 hover:text-blue-700 text-sm">
+                        🎯 <span>${state.performanceData.wrongAnswersQueue.length} verbs to review</span>
+                      </button>
+                    ` : ''}
+                  </div>
+                ` : ''}
+                <div class="space-y-3">
+                  <button onclick="startGame()" class="w-full px-8 h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all font-medium">Start Game</button>
+                  ${state.gameResults ? `<button onclick="state.showReviewModal=true;render()" class="w-full px-8 h-12 text-base bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Review Answers</button>` : ''}
+                </div>
+              ` : `
+                <div class="text-6xl mb-4">🏆</div>
+                <h2 class="text-2xl sm:text-3xl font-semibold mb-3 text-gray-900">Game Complete!</h2>
+                <p class="text-lg text-gray-600 mb-6">Your Score:</p>
+                <div class="text-5xl sm:text-6xl font-bold text-blue-600 mb-2">${state.score}/10</div>
+                <p class="text-gray-600 mb-8">${state.score === 10 ? 'Perfect!' : state.score >= 7 ? 'Great job!' : 'Keep practicing!'}</p>
+                ${(totalCorrect + totalIncorrect) > 0 ? `
+                  <div class="mb-8 p-6 bg-gray-50 rounded-lg">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Total Progress</h3>
+                    <div class="grid grid-cols-3 gap-4 text-sm">
+                      <button onclick="state.showStatsModal='correct';render()" class="p-3 bg-white rounded-lg hover:shadow-md transition-all cursor-pointer">
+                        <div class="text-2xl font-bold text-green-600">${totalCorrect}</div>
+                        <div class="text-xs text-gray-600">All Time Correct</div>
+                      </button>
+                      <div class="p-3 bg-white rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600">${state.performanceData.gameNumber}</div>
+                        <div class="text-xs text-gray-600">Total Games</div>
+                      </div>
+                      <div class="p-3 bg-white rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600">${accuracy}%</div>
+                        <div class="text-xs text-gray-600">Accuracy</div>
+                      </div>
+                    </div>
+                  </div>
+                ` : ''}
+                <div class="space-y-3">
+                  <button onclick="state.showReviewModal=true;render()" class="w-full px-8 h-12 text-base bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Review Answers</button>
+                  <button onclick="startGame()" class="w-full px-8 h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all flex items-center justify-center font-medium">↻ Play Again</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      } else {
+        const verb = state.gameVerbs[state.currentVerbIndex];
+        const progress = ((state.currentVerbIndex / 10) * 100);
+
+        return `
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-2xl">
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-sm font-medium text-gray-600">Question ${state.currentVerbIndex + 1} of 10</span>
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm font-semibold text-blue-600">Score: ${state.score}/${state.currentVerbIndex}</span>
+                  <button onclick="state.gameStarted=false;state.currentVerbIndex=0;render()" class="text-red-600 hover:text-red-700 text-sm">Exit</button>
+                </div>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
+              </div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8 sm:p-12">
+              <div class="text-center mb-8">
+                <div class="mb-4" style="font-size: 120px">${verb.emoji}</div>
+                <div class="mb-4">
+                  <span class="text-lg px-4 py-2 mb-3 bg-blue-600 text-white rounded-md inline-block">Infinitive: ${verb.base}</span>
+                </div>
+                <h3 class="text-lg sm:text-xl font-normal text-gray-900 mb-2">What's the ${verb.askingFor === 'pastSimple' ? 'Past Simple (2nd form)' : 'Past Participle (3rd form)'}?</h3>
+                <p class="text-gray-500 text-sm">${verb.askingFor === 'pastSimple' ? 'Example: I ____ yesterday' : 'Example: I have ____'}</p>
+              </div>
+              ${!state.feedback ? `
+                <div class="space-y-4">
+                  <input type="text" id="answerInput" placeholder="Type your answer..." class="w-full h-12 text-base text-center border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="if(event.key==='Enter'&&!state.feedback) { event.preventDefault(); checkAnswer(); }">
+                  <button onclick="checkAnswer()" class="w-full h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">Check Answer</button>
+                </div>
+              ` : `
+                <div class="space-y-6">
+                  <div class="p-6 rounded-lg text-center ${state.feedback.isCorrect ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}">
+                    <div class="flex items-center justify-center mb-3" style="font-size: 32px">${state.feedback.isCorrect ? '✓' : '✕'}</div>
+                    <p class="text-lg font-semibold mb-2">${state.feedback.isCorrect ? 'Correct!' : 'Incorrect'}</p>
+                    ${!state.feedback.isCorrect ? `
+                      <div class="text-sm">
+                        <p class="mb-2"><strong>Your answer:</strong> <span class="font-semibold">${state.feedback.userAnswer}</span></p>
+                        <p><strong>Correct answer:</strong> <span class="font-bold text-base">${state.feedback.correctAnswer}</span></p>
+                      </div>
+                    ` : ''}
+                  </div>
+                  <button onclick="nextQuestion()" class="w-full h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">${state.currentVerbIndex + 1 >= 10 ? 'View Results' : 'Next Question'}</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function renderReviewModal() {
+      return `
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target===this) { state.showReviewModal=false; render(); }">
+          <div class="w-full max-w-3xl bg-white rounded-xl shadow-2xl flex flex-col" style="maxHeight: 600px" onclick="event.stopPropagation()">
+            <div class="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+              <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 text-center">Review Your Answers</h2>
+              <p class="text-center text-gray-600 text-sm mt-1">Final Score: ${state.gameResults.score}/${state.gameResults.total}</p>
+            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1">
+              <div class="space-y-3">
+                ${state.gameResults.answers.map((ans, idx) => {
+                  const correct = ans.verb[ans.askedFor].toLowerCase().split('/').map(f => f.trim());
+                  const isCorrect = correct.includes(ans.userAnswer.toLowerCase().trim());
+                  return `
+                    <div class="p-3 sm:p-4 rounded-lg border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
+                      <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-3">
+                          <span style="font-size: 28px">${ans.verb.emoji}</span>
+                          <div>
+                            <span class="font-semibold text-gray-900 text-base sm:text-lg">${ans.verb.base}</span>
+                            <span class="ml-2 text-xs bg-white px-2 py-1 rounded">${ans.verb.level}</span>
+                          </div>
+                        </div>
+                        <span style="font-size: 20px">${isCorrect ? '✓' : '✕'}</span>
+                      </div>
+                      <div class="text-sm space-y-1">
+                        <div class="text-gray-700"><strong>Asked for:</strong> ${ans.askedFor === 'pastSimple' ? 'Past Simple' : 'Past Participle'}</div>
+                        <div class="${isCorrect ? 'text-green-700' : 'text-red-700'}"><strong>Your answer:</strong> ${ans.userAnswer}</div>
+                        ${!isCorrect ? `<div class="text-gray-900"><strong>Correct answer:</strong> ${ans.verb[ans.askedFor]}</div>` : ''}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+            <div class="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+              <button onclick="state.showReviewModal=false;render()" class="w-full h-10 sm:h-12 text-sm sm:text-base font-medium bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Go Back</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStatsModal() {
+      let verbs = [];
+      if (state.showStatsModal === 'toReview') {
+        verbs = state.performanceData.wrongAnswersQueue.map(b => irregularVerbs.find(v => v.base === b)).filter(v => v);
+      } else if (state.showStatsModal === 'correct') {
+        verbs = Object.entries(state.performanceData.verbStats)
+          .filter(([_, st]) => st.correct > 0)
+          .map(([b, st]) => ({ ...irregularVerbs.find(v => v.base === b), correctCount: st.correct }))
+          .filter(v => v.base)
+          .sort((a, b) => b.correctCount - a.correctCount);
+      } else if (state.showStatsModal === 'incorrect') {
+        verbs = Object.entries(state.performanceData.verbStats)
+          .filter(([_, st]) => st.incorrect > 0)
+          .map(([b, st]) => ({ ...irregularVerbs.find(v => v.base === b), incorrectCount: st.incorrect }))
+          .filter(v => v.base)
+          .sort((a, b) => b.incorrectCount - a.incorrectCount);
+      }
+
+      const titles = { toReview: 'Verbs to Review', correct: 'Verbs You Got Correct', incorrect: 'Verbs You Got Incorrect' };
+      const icons = { toReview: '🎯', correct: '✓', incorrect: '✕' };
+
+      return `
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target===this) { state.showStatsModal=null; render(); }">
+          <div class="w-full max-w-3xl bg-white rounded-xl shadow-2xl flex flex-col" style="maxHeight: 600px" onclick="event.stopPropagation()">
+            <div class="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <span style="font-size: 24px">${icons[state.showStatsModal]}</span>
+                  <h2 class="text-lg sm:text-xl font-semibold text-gray-900">${titles[state.showStatsModal]}</h2>
+                </div>
+                <button onclick="state.showStatsModal=null;render()" class="text-gray-400 hover:text-gray-600 transition-colors">✕</button>
+              </div>
+            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1">
+              ${verbs.length === 0 ? `
+                <div class="text-center py-8 text-gray-500">
+                  <p class="text-base">No verbs in this category yet.</p>
+                </div>
+              ` : `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  ${verbs.map(v => `
+                    <div class="p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-all">
+                      <div class="flex items-start justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                          <span style="font-size: 24px">${v.emoji}</span>
+                          <div>
+                            <div class="flex items-center space-x-2">
+                              <span class="font-semibold text-gray-900">${v.base}</span>
+                              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${v.level}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="text-sm text-gray-600">Past: <span class="text-gray-900 font-medium">${v.pastSimple}</span></div>
+                      ${v.correctCount ? `<div class="mt-2 text-green-600 text-xs flex items-center">✓ ${v.correctCount} time${v.correctCount > 1 ? 's' : ''}</div>` : ''}
+                      ${v.incorrectCount ? `<div class="mt-2 text-red-600 text-xs flex items-center">✕ ${v.incorrectCount} time${v.incorrectCount > 1 ? 's' : ''}</div>` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+            <div class="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+              <button onclick="state.showStatsModal=null;render()" class="w-full h-10 sm:h-12 text-sm sm:text-base font-medium bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Go Back</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Initialize
+    render();
+  </script>
+</body>
+</html>
