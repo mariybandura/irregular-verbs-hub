@@ -71,77 +71,77 @@
   <script>
     // ============ DATA ============
     const irregularVerbs = [
-      { base: 'be', pastSimple: 'was/were', pastParticiple: 'been', emoji: '🧍', isRegular: false, commonRank: 1, level: 'A1', ukrainian: 'бути', ukrainianPast: 'був' },
-      { base: 'have', pastSimple: 'had', pastParticiple: 'had', emoji: '🤲', isRegular: false, commonRank: 2, level: 'A1', ukrainian: 'мати', ukrainianPast: 'мав' },
-      { base: 'do', pastSimple: 'did', pastParticiple: 'done', emoji: '✔️', isRegular: false, commonRank: 3, level: 'A1', ukrainian: 'робити', ukrainianPast: 'робив' },
-      { base: 'say', pastSimple: 'said', pastParticiple: 'said', emoji: '💬', isRegular: false, commonRank: 4, level: 'A1', ukrainian: 'казати', ukrainianPast: 'казав' },
-      { base: 'go', pastSimple: 'went', pastParticiple: 'gone', emoji: '🚀', isRegular: false, commonRank: 5, level: 'A1', ukrainian: 'йти/піти', ukrainianPast: 'йшов/пішов' },
-      { base: 'get', pastSimple: 'got', pastParticiple: 'got/gotten', emoji: '🎁', isRegular: false, commonRank: 6, level: 'A1', ukrainian: 'отримувати', ukrainianPast: 'отримував' },
-      { base: 'make', pastSimple: 'made', pastParticiple: 'made', emoji: '🛠️', isRegular: false, commonRank: 7, level: 'A1', ukrainian: 'робити', ukrainianPast: 'робив' },
-      { base: 'know', pastSimple: 'knew', pastParticiple: 'known', emoji: '🧠', isRegular: false, commonRank: 8, level: 'A1', ukrainian: 'знати', ukrainianPast: 'знав' },
-      { base: 'think', pastSimple: 'thought', pastParticiple: 'thought', emoji: '💡', isRegular: false, commonRank: 9, level: 'A1', ukrainian: 'думати', ukrainianPast: 'думав' },
-      { base: 'take', pastSimple: 'took', pastParticiple: 'taken', emoji: '🤏', isRegular: false, commonRank: 10, level: 'A1', ukrainian: 'брати', ukrainianPast: 'брав' },
-      { base: 'see', pastSimple: 'saw', pastParticiple: 'seen', emoji: '👁️', isRegular: false, commonRank: 11, level: 'A1', ukrainian: 'бачити', ukrainianPast: 'бачив' },
-      { base: 'come', pastSimple: 'came', pastParticiple: 'come', emoji: '🚶', isRegular: false, commonRank: 12, level: 'A1', ukrainian: 'приходити', ukrainianPast: 'приходив' },
-      { base: 'give', pastSimple: 'gave', pastParticiple: 'given', emoji: '🎁', isRegular: false, commonRank: 13, level: 'A2', ukrainian: 'давати', ukrainianPast: 'давав' },
-      { base: 'find', pastSimple: 'found', pastParticiple: 'found', emoji: '🔍', isRegular: false, commonRank: 14, level: 'A1', ukrainian: 'знаходити', ukrainianPast: 'знаходив' },
-      { base: 'tell', pastSimple: 'told', pastParticiple: 'told', emoji: '📣', isRegular: false, commonRank: 15, level: 'A1', ukrainian: 'говорити', ukrainianPast: 'говорив' },
-      { base: 'become', pastSimple: 'became', pastParticiple: 'become', emoji: '🦋', isRegular: false, commonRank: 16, level: 'A2', ukrainian: 'ставати', ukrainianPast: 'ставав' },
-      { base: 'leave', pastSimple: 'left', pastParticiple: 'left', emoji: '🚪', isRegular: false, commonRank: 17, level: 'A2', ukrainian: 'залишати', ukrainianPast: 'залишав' },
-      { base: 'feel', pastSimple: 'felt', pastParticiple: 'felt', emoji: '💭', isRegular: false, commonRank: 18, level: 'A2', ukrainian: 'відчувати', ukrainianPast: 'відчував' },
-      { base: 'bring', pastSimple: 'brought', pastParticiple: 'brought', emoji: '📦', isRegular: false, commonRank: 19, level: 'A2', ukrainian: 'приносити', ukrainianPast: 'приносив' },
-      { base: 'begin', pastSimple: 'began', pastParticiple: 'begun', emoji: '▶️', isRegular: false, commonRank: 20, level: 'A2', ukrainian: 'починати', ukrainianPast: 'починав' },
-      { base: 'keep', pastSimple: 'kept', pastParticiple: 'kept', emoji: '🔐', isRegular: false, commonRank: 21, level: 'A2', ukrainian: 'зберігати', ukrainianPast: 'зберігав' },
-      { base: 'hold', pastSimple: 'held', pastParticiple: 'held', emoji: '✊', isRegular: false, commonRank: 22, level: 'B1', ukrainian: 'тримати', ukrainianPast: 'тримав' },
-      { base: 'write', pastSimple: 'wrote', pastParticiple: 'written', emoji: '✍️', isRegular: false, commonRank: 23, level: 'A1', ukrainian: 'писати', ukrainianPast: 'писав' },
-      { base: 'stand', pastSimple: 'stood', pastParticiple: 'stood', emoji: '🧍', isRegular: false, commonRank: 24, level: 'A2', ukrainian: 'стояти', ukrainianPast: 'стояв' },
-      { base: 'hear', pastSimple: 'heard', pastParticiple: 'heard', emoji: '👂', isRegular: false, commonRank: 25, level: 'A2', ukrainian: 'чути', ukrainianPast: 'чув' },
-      { base: 'let', pastSimple: 'let', pastParticiple: 'let', emoji: '🤝', isRegular: false, commonRank: 26, level: 'A2', ukrainian: 'дозволяти', ukrainianPast: 'дозволяв' },
-      { base: 'mean', pastSimple: 'meant', pastParticiple: 'meant', emoji: '📝', isRegular: false, commonRank: 27, level: 'A2', ukrainian: 'означати', ukrainianPast: 'означав' },
-      { base: 'put', pastSimple: 'put', pastParticiple: 'put', emoji: '📥', isRegular: false, commonRank: 28, level: 'A1', ukrainian: 'класти', ukrainianPast: 'клав' },
-      { base: 'show', pastSimple: 'showed', pastParticiple: 'shown', emoji: '👉', isRegular: false, commonRank: 29, level: 'A2', ukrainian: 'показувати', ukrainianPast: 'показував' },
-      { base: 'speak', pastSimple: 'spoke', pastParticiple: 'spoken', emoji: '🗣️', isRegular: false, commonRank: 30, level: 'A2', ukrainian: 'говорити', ukrainianPast: 'говорив' },
-      { base: 'run', pastSimple: 'ran', pastParticiple: 'run', emoji: '🏃', isRegular: false, commonRank: 31, level: 'A1', ukrainian: 'бігти', ukrainianPast: 'біг' },
-      { base: 'read', pastSimple: 'read', pastParticiple: 'read', emoji: '📖', isRegular: false, commonRank: 32, level: 'A1', ukrainian: 'читати', ukrainianPast: 'читав' },
-      { base: 'sit', pastSimple: 'sat', pastParticiple: 'sat', emoji: '💺', isRegular: false, commonRank: 33, level: 'A1', ukrainian: 'сидіти', ukrainianPast: 'сидів' },
-      { base: 'pay', pastSimple: 'paid', pastParticiple: 'paid', emoji: '💰', isRegular: false, commonRank: 34, level: 'A2', ukrainian: 'платити', ukrainianPast: 'платив' },
-      { base: 'meet', pastSimple: 'met', pastParticiple: 'met', emoji: '🤝', isRegular: false, commonRank: 35, level: 'A1', ukrainian: 'зустрічати', ukrainianPast: 'зустрічав' },
-      { base: 'lose', pastSimple: 'lost', pastParticiple: 'lost', emoji: '❌', isRegular: false, commonRank: 36, level: 'A2', ukrainian: 'втрачати', ukrainianPast: 'втрачав' },
-      { base: 'buy', pastSimple: 'bought', pastParticiple: 'bought', emoji: '🛒', isRegular: false, commonRank: 37, level: 'A1', ukrainian: 'купувати', ukrainianPast: 'купував' },
-      { base: 'send', pastSimple: 'sent', pastParticiple: 'sent', emoji: '📧', isRegular: false, commonRank: 38, level: 'A2', ukrainian: 'відправляти', ukrainianPast: 'відправляв' },
-      { base: 'break', pastSimple: 'broke', pastParticiple: 'broken', emoji: '💔', isRegular: false, commonRank: 39, level: 'A2', ukrainian: 'ламати', ukrainianPast: 'ламав' },
-      { base: 'build', pastSimple: 'built', pastParticiple: 'built', emoji: '🏗️', isRegular: false, commonRank: 40, level: 'B1', ukrainian: 'будувати', ukrainianPast: 'будував' },
-      { base: 'understand', pastSimple: 'understood', pastParticiple: 'understood', emoji: '💡', isRegular: false, commonRank: 41, level: 'A2', ukrainian: 'розуміти', ukrainianPast: 'розумів' },
-      { base: 'spend', pastSimple: 'spent', pastParticiple: 'spent', emoji: '💸', isRegular: false, commonRank: 42, level: 'A2', ukrainian: 'витрачати', ukrainianPast: 'витрачав' },
-      { base: 'fall', pastSimple: 'fell', pastParticiple: 'fallen', emoji: '🍂', isRegular: false, commonRank: 43, level: 'A2', ukrainian: 'падати', ukrainianPast: 'падав' },
-      { base: 'cut', pastSimple: 'cut', pastParticiple: 'cut', emoji: '✂️', isRegular: false, commonRank: 44, level: 'A2', ukrainian: 'різати', ukrainianPast: 'різав' },
-      { base: 'grow', pastSimple: 'grew', pastParticiple: 'grown', emoji: '🌱', isRegular: false, commonRank: 45, level: 'A2', ukrainian: 'рости', ukrainianPast: 'ріс' },
-      { base: 'win', pastSimple: 'won', pastParticiple: 'won', emoji: '🏆', isRegular: false, commonRank: 46, level: 'A2', ukrainian: 'виграти', ukrainianPast: 'виграв' },
-      { base: 'teach', pastSimple: 'taught', pastParticiple: 'taught', emoji: '👨‍🏫', isRegular: false, commonRank: 47, level: 'A2', ukrainian: 'вчити', ukrainianPast: 'вчив' },
-      { base: 'catch', pastSimple: 'caught', pastParticiple: 'caught', emoji: '🤾', isRegular: false, commonRank: 48, level: 'A2', ukrainian: 'ловити', ukrainianPast: 'ловив' },
-      { base: 'choose', pastSimple: 'chose', pastParticiple: 'chosen', emoji: '✅', isRegular: false, commonRank: 49, level: 'B1', ukrainian: 'вибирати', ukrainianPast: 'вибирав' },
-      { base: 'sell', pastSimple: 'sold', pastParticiple: 'sold', emoji: '💵', isRegular: false, commonRank: 50, level: 'B1', ukrainian: 'продавати', ukrainianPast: 'продавав' },
-      { base: 'eat', pastSimple: 'ate', pastParticiple: 'eaten', emoji: '🍽️', isRegular: false, level: 'A1', ukrainian: 'їсти', ukrainianPast: 'їв' },
-      { base: 'drink', pastSimple: 'drank', pastParticiple: 'drunk', emoji: '🥤', isRegular: false, level: 'A1', ukrainian: 'пити', ukrainianPast: 'пив' },
-      { base: 'drive', pastSimple: 'drove', pastParticiple: 'driven', emoji: '🚗', isRegular: false, level: 'A2', ukrainian: 'їздити', ukrainianPast: 'їздив' },
-      { base: 'fly', pastSimple: 'flew', pastParticiple: 'flown', emoji: '✈️', isRegular: false, level: 'A2', ukrainian: 'літати', ukrainianPast: 'літав' },
-      { base: 'forget', pastSimple: 'forgot', pastParticiple: 'forgotten', emoji: '🤔', isRegular: false, level: 'A2', ukrainian: 'забувати', ukrainianPast: 'забував' },
-      { base: 'sleep', pastSimple: 'slept', pastParticiple: 'slept', emoji: '😴', isRegular: false, level: 'A1', ukrainian: 'спати', ukrainianPast: 'спав' },
-      { base: 'sing', pastSimple: 'sang', pastParticiple: 'sung', emoji: '🎤', isRegular: false, level: 'A2', ukrainian: 'співати', ukrainianPast: 'співав' },
-      { base: 'swim', pastSimple: 'swam', pastParticiple: 'swum', emoji: '🏊', isRegular: false, level: 'A2', ukrainian: 'плавати', ukrainianPast: 'плавав' },
-      { base: 'wake', pastSimple: 'woke', pastParticiple: 'woken', emoji: '⏰', isRegular: false, level: 'A2', ukrainian: 'пробуджуватися', ukrainianPast: 'пробудився' },
-      { base: 'wear', pastSimple: 'wore', pastParticiple: 'worn', emoji: '👕', isRegular: false, level: 'A2', ukrainian: 'носити', ukrainianPast: 'носив' },
-      { base: 'hide', pastSimple: 'hid', pastParticiple: 'hidden', emoji: '🫣', isRegular: false, level: 'B2', ukrainian: 'ховати', ukrainianPast: 'ховав' },
-      { base: 'draw', pastSimple: 'drew', pastParticiple: 'drawn', emoji: '✏️', isRegular: false, level: 'B2', ukrainian: 'малювати', ukrainianPast: 'малював' },
-      { base: 'shoot', pastSimple: 'shot', pastParticiple: 'shot', emoji: '🎯', isRegular: false, level: 'B2', ukrainian: 'стріляти', ukrainianPast: 'стріляв' },
-      { base: 'ride', pastSimple: 'rode', pastParticiple: 'ridden', emoji: '🚴', isRegular: false, level: 'B2', ukrainian: 'їхати', ukrainianPast: 'їхав' },
-      { base: 'throw', pastSimple: 'threw', pastParticiple: 'thrown', emoji: '⚾', isRegular: false, level: 'B2', ukrainian: 'кидати', ukrainianPast: 'кидав' },
-      { base: 'slide', pastSimple: 'slid', pastParticiple: 'slid', emoji: '🛝', isRegular: false, level: 'B2', ukrainian: 'ковзати', ukrainianPast: 'ковзав' },
-      { base: 'steal', pastSimple: 'stole', pastParticiple: 'stolen', emoji: '🦹', isRegular: false, level: 'B2', ukrainian: 'крастися', ukrainianPast: 'крався' },
-      { base: 'knit', pastSimple: 'knit/knitted', pastParticiple: 'knit/knitted', emoji: '🧶', isRegular: false, level: 'B2', ukrainian: 'в\'язати', ukrainianPast: 'в\'язав' },
-      { base: 'shine', pastSimple: 'shone', pastParticiple: 'shone', emoji: '✨', isRegular: false, level: 'B2', ukrainian: 'світити', ukrainianPast: 'світив' },
-      { base: 'sweep', pastSimple: 'swept', pastParticiple: 'swept', emoji: '🧹', isRegular: false, level: 'B2', ukrainian: 'мести', ukrainianPast: 'мів' },
-      { base: 'sink', pastSimple: 'sank', pastParticiple: 'sunk', emoji: '🚢', isRegular: false, level: 'B2', ukrainian: 'тонути', ukrainianPast: 'тонув' },
+      { base: 'be', pastSimple: 'was/were', pastParticiple: 'been', emoji: '🧍', isRegular: false, commonRank: 1, level: 'A1', ukrainian: 'бути', ukrainianPast: { fem: 'була', masc: 'був', plural: 'були' } },
+      { base: 'have', pastSimple: 'had', pastParticiple: 'had', emoji: '🤲', isRegular: false, commonRank: 2, level: 'A1', ukrainian: 'мати', ukrainianPast: { fem: 'мала', masc: 'мав', plural: 'мали' } },
+      { base: 'do', pastSimple: 'did', pastParticiple: 'done', emoji: '✔️', isRegular: false, commonRank: 3, level: 'A1', ukrainian: 'робити', ukrainianPast: { fem: 'робила', masc: 'робив', plural: 'робили' } },
+      { base: 'say', pastSimple: 'said', pastParticiple: 'said', emoji: '💬', isRegular: false, commonRank: 4, level: 'A1', ukrainian: 'казати', ukrainianPast: { fem: 'казала', masc: 'казав', plural: 'казали' } },
+      { base: 'go', pastSimple: 'went', pastParticiple: 'gone', emoji: '🚀', isRegular: false, commonRank: 5, level: 'A1', ukrainian: 'йти/піти', ukrainianPast: { fem: 'йшла/пішла', masc: 'йшов/пішов', plural: 'йшли/пішли' } },
+      { base: 'get', pastSimple: 'got', pastParticiple: 'got/gotten', emoji: '🎁', isRegular: false, commonRank: 6, level: 'A1', ukrainian: 'отримувати', ukrainianPast: { fem: 'отримувала', masc: 'отримував', plural: 'отримували' } },
+      { base: 'make', pastSimple: 'made', pastParticiple: 'made', emoji: '🛠️', isRegular: false, commonRank: 7, level: 'A1', ukrainian: 'робити', ukrainianPast: { fem: 'робила', masc: 'робив', plural: 'робили' } },
+      { base: 'know', pastSimple: 'knew', pastParticiple: 'known', emoji: '🧠', isRegular: false, commonRank: 8, level: 'A1', ukrainian: 'знати', ukrainianPast: { fem: 'знала', masc: 'знав', plural: 'знали' } },
+      { base: 'think', pastSimple: 'thought', pastParticiple: 'thought', emoji: '💡', isRegular: false, commonRank: 9, level: 'A1', ukrainian: 'думати', ukrainianPast: { fem: 'думала', masc: 'думав', plural: 'думали' } },
+      { base: 'take', pastSimple: 'took', pastParticiple: 'taken', emoji: '🤏', isRegular: false, commonRank: 10, level: 'A1', ukrainian: 'брати', ukrainianPast: { fem: 'брала', masc: 'брав', plural: 'брали' } },
+      { base: 'see', pastSimple: 'saw', pastParticiple: 'seen', emoji: '👁️', isRegular: false, commonRank: 11, level: 'A1', ukrainian: 'бачити', ukrainianPast: { fem: 'бачила', masc: 'бачив', plural: 'бачили' } },
+      { base: 'come', pastSimple: 'came', pastParticiple: 'come', emoji: '🚶', isRegular: false, commonRank: 12, level: 'A1', ukrainian: 'приходити', ukrainianPast: { fem: 'приходила', masc: 'приходив', plural: 'приходили' } },
+      { base: 'give', pastSimple: 'gave', pastParticiple: 'given', emoji: '🎁', isRegular: false, commonRank: 13, level: 'A2', ukrainian: 'давати', ukrainianPast: { fem: 'давала', masc: 'давав', plural: 'давали' } },
+      { base: 'find', pastSimple: 'found', pastParticiple: 'found', emoji: '🔍', isRegular: false, commonRank: 14, level: 'A1', ukrainian: 'знаходити', ukrainianPast: { fem: 'знаходила', masc: 'знаходив', plural: 'знаходили' } },
+      { base: 'tell', pastSimple: 'told', pastParticiple: 'told', emoji: '📣', isRegular: false, commonRank: 15, level: 'A1', ukrainian: 'говорити', ukrainianPast: { fem: 'говорила', masc: 'говорив', plural: 'говорили' } },
+      { base: 'become', pastSimple: 'became', pastParticiple: 'become', emoji: '🦋', isRegular: false, commonRank: 16, level: 'A2', ukrainian: 'ставати', ukrainianPast: { fem: 'ставала', masc: 'ставав', plural: 'ставали' } },
+      { base: 'leave', pastSimple: 'left', pastParticiple: 'left', emoji: '🚪', isRegular: false, commonRank: 17, level: 'A2', ukrainian: 'залишати', ukrainianPast: { fem: 'залишала', masc: 'залишав', plural: 'залишали' } },
+      { base: 'feel', pastSimple: 'felt', pastParticiple: 'felt', emoji: '💭', isRegular: false, commonRank: 18, level: 'A2', ukrainian: 'відчувати', ukrainianPast: { fem: 'відчувала', masc: 'відчував', plural: 'відчували' } },
+      { base: 'bring', pastSimple: 'brought', pastParticiple: 'brought', emoji: '📦', isRegular: false, commonRank: 19, level: 'A2', ukrainian: 'приносити', ukrainianPast: { fem: 'приносила', masc: 'приносив', plural: 'приносили' } },
+      { base: 'begin', pastSimple: 'began', pastParticiple: 'begun', emoji: '▶️', isRegular: false, commonRank: 20, level: 'A2', ukrainian: 'починати', ukrainianPast: { fem: 'починала', masc: 'починав', plural: 'починали' } },
+      { base: 'keep', pastSimple: 'kept', pastParticiple: 'kept', emoji: '🔐', isRegular: false, commonRank: 21, level: 'A2', ukrainian: 'зберігати', ukrainianPast: { fem: 'зберігала', masc: 'зберігав', plural: 'зберігали' } },
+      { base: 'hold', pastSimple: 'held', pastParticiple: 'held', emoji: '✊', isRegular: false, commonRank: 22, level: 'B1', ukrainian: 'тримати', ukrainianPast: { fem: 'тримала', masc: 'тримав', plural: 'тримали' } },
+      { base: 'write', pastSimple: 'wrote', pastParticiple: 'written', emoji: '✍️', isRegular: false, commonRank: 23, level: 'A1', ukrainian: 'писати', ukrainianPast: { fem: 'писала', masc: 'писав', plural: 'писали' } },
+      { base: 'stand', pastSimple: 'stood', pastParticiple: 'stood', emoji: '🧍', isRegular: false, commonRank: 24, level: 'A2', ukrainian: 'стояти', ukrainianPast: { fem: 'стояла', masc: 'стояв', plural: 'стояли' } },
+      { base: 'hear', pastSimple: 'heard', pastParticiple: 'heard', emoji: '👂', isRegular: false, commonRank: 25, level: 'A2', ukrainian: 'чути', ukrainianPast: { fem: 'чула', masc: 'чув', plural: 'чули' } },
+      { base: 'let', pastSimple: 'let', pastParticiple: 'let', emoji: '🤝', isRegular: false, commonRank: 26, level: 'A2', ukrainian: 'дозволяти', ukrainianPast: { fem: 'дозволяла', masc: 'дозволяв', plural: 'дозволяли' } },
+      { base: 'mean', pastSimple: 'meant', pastParticiple: 'meant', emoji: '📝', isRegular: false, commonRank: 27, level: 'A2', ukrainian: 'означати', ukrainianPast: { fem: 'означала', masc: 'означав', plural: 'означали' } },
+      { base: 'put', pastSimple: 'put', pastParticiple: 'put', emoji: '📥', isRegular: false, commonRank: 28, level: 'A1', ukrainian: 'класти', ukrainianPast: { fem: 'клала', masc: 'клав', plural: 'клали' } },
+      { base: 'show', pastSimple: 'showed', pastParticiple: 'shown', emoji: '👉', isRegular: false, commonRank: 29, level: 'A2', ukrainian: 'показувати', ukrainianPast: { fem: 'показувала', masc: 'показував', plural: 'показували' } },
+      { base: 'speak', pastSimple: 'spoke', pastParticiple: 'spoken', emoji: '🗣️', isRegular: false, commonRank: 30, level: 'A2', ukrainian: 'говорити', ukrainianPast: { fem: 'говорила', masc: 'говорив', plural: 'говорили' } },
+      { base: 'run', pastSimple: 'ran', pastParticiple: 'run', emoji: '🏃', isRegular: false, commonRank: 31, level: 'A1', ukrainian: 'бігти', ukrainianPast: { fem: 'бігла', masc: 'біг', plural: 'бігли' } },
+      { base: 'read', pastSimple: 'read', pastParticiple: 'read', emoji: '📖', isRegular: false, commonRank: 32, level: 'A1', ukrainian: 'читати', ukrainianPast: { fem: 'читала', masc: 'читав', plural: 'читали' } },
+      { base: 'sit', pastSimple: 'sat', pastParticiple: 'sat', emoji: '💺', isRegular: false, commonRank: 33, level: 'A1', ukrainian: 'сидіти', ukrainianPast: { fem: 'сиділа', masc: 'сидів', plural: 'сиділи' } },
+      { base: 'pay', pastSimple: 'paid', pastParticiple: 'paid', emoji: '💰', isRegular: false, commonRank: 34, level: 'A2', ukrainian: 'платити', ukrainianPast: { fem: 'платила', masc: 'платив', plural: 'платили' } },
+      { base: 'meet', pastSimple: 'met', pastParticiple: 'met', emoji: '🤝', isRegular: false, commonRank: 35, level: 'A1', ukrainian: 'зустрічати', ukrainianPast: { fem: 'зустрічала', masc: 'зустрічав', plural: 'зустрічали' } },
+      { base: 'lose', pastSimple: 'lost', pastParticiple: 'lost', emoji: '❌', isRegular: false, commonRank: 36, level: 'A2', ukrainian: 'втрачати', ukrainianPast: { fem: 'втрачала', masc: 'втрачав', plural: 'втрачали' } },
+      { base: 'buy', pastSimple: 'bought', pastParticiple: 'bought', emoji: '🛒', isRegular: false, commonRank: 37, level: 'A1', ukrainian: 'купувати', ukrainianPast: { fem: 'купувала', masc: 'купував', plural: 'купували' } },
+      { base: 'send', pastSimple: 'sent', pastParticiple: 'sent', emoji: '📧', isRegular: false, commonRank: 38, level: 'A2', ukrainian: 'відправляти', ukrainianPast: { fem: 'відправляла', masc: 'відправляв', plural: 'відправляли' } },
+      { base: 'break', pastSimple: 'broke', pastParticiple: 'broken', emoji: '💔', isRegular: false, commonRank: 39, level: 'A2', ukrainian: 'ламати', ukrainianPast: { fem: 'ламала', masc: 'ламав', plural: 'ламали' } },
+      { base: 'build', pastSimple: 'built', pastParticiple: 'built', emoji: '🏗️', isRegular: false, commonRank: 40, level: 'B1', ukrainian: 'будувати', ukrainianPast: { fem: 'будувала', masc: 'будував', plural: 'будували' } },
+      { base: 'understand', pastSimple: 'understood', pastParticiple: 'understood', emoji: '💡', isRegular: false, commonRank: 41, level: 'A2', ukrainian: 'розуміти', ukrainianPast: { fem: 'розуміла', masc: 'розумів', plural: 'розуміли' } },
+      { base: 'spend', pastSimple: 'spent', pastParticiple: 'spent', emoji: '💸', isRegular: false, commonRank: 42, level: 'A2', ukrainian: 'витрачати', ukrainianPast: { fem: 'витрачала', masc: 'витрачав', plural: 'витрачали' } },
+      { base: 'fall', pastSimple: 'fell', pastParticiple: 'fallen', emoji: '🍂', isRegular: false, commonRank: 43, level: 'A2', ukrainian: 'падати', ukrainianPast: { fem: 'падала', masc: 'падав', plural: 'падали' } },
+      { base: 'cut', pastSimple: 'cut', pastParticiple: 'cut', emoji: '✂️', isRegular: false, commonRank: 44, level: 'A2', ukrainian: 'різати', ukrainianPast: { fem: 'різала', masc: 'різав', plural: 'різали' } },
+      { base: 'grow', pastSimple: 'grew', pastParticiple: 'grown', emoji: '🌱', isRegular: false, commonRank: 45, level: 'A2', ukrainian: 'рости', ukrainianPast: { fem: 'росла', masc: 'ріс', plural: 'росли' } },
+      { base: 'win', pastSimple: 'won', pastParticiple: 'won', emoji: '🏆', isRegular: false, commonRank: 46, level: 'A2', ukrainian: 'вигравати', ukrainianPast: { fem: 'вигравала', masc: 'вигравав', plural: 'вигравали' } },
+      { base: 'teach', pastSimple: 'taught', pastParticiple: 'taught', emoji: '👨‍🏫', isRegular: false, commonRank: 47, level: 'A2', ukrainian: 'вчити', ukrainianPast: { fem: 'вчила', masc: 'вчив', plural: 'вчили' } },
+      { base: 'catch', pastSimple: 'caught', pastParticiple: 'caught', emoji: '🤾', isRegular: false, commonRank: 48, level: 'A2', ukrainian: 'ловити', ukrainianPast: { fem: 'ловила', masc: 'ловив', plural: 'ловили' } },
+      { base: 'choose', pastSimple: 'chose', pastParticiple: 'chosen', emoji: '✅', isRegular: false, commonRank: 49, level: 'B1', ukrainian: 'вибирати', ukrainianPast: { fem: 'вибирала', masc: 'вибирав', plural: 'вибирали' } },
+      { base: 'sell', pastSimple: 'sold', pastParticiple: 'sold', emoji: '💵', isRegular: false, commonRank: 50, level: 'B1', ukrainian: 'продавати', ukrainianPast: { fem: 'продавала', masc: 'продавав', plural: 'продавали' } },
+      { base: 'eat', pastSimple: 'ate', pastParticiple: 'eaten', emoji: '🍽️', isRegular: false, level: 'A1', ukrainian: 'їсти', ukrainianPast: { fem: 'їла', masc: 'їв', plural: 'їли' } },
+      { base: 'drink', pastSimple: 'drank', pastParticiple: 'drunk', emoji: '🥤', isRegular: false, level: 'A1', ukrainian: 'пити', ukrainianPast: { fem: 'пила', masc: 'пив', plural: 'пили' } },
+      { base: 'drive', pastSimple: 'drove', pastParticiple: 'driven', emoji: '🚗', isRegular: false, level: 'A2', ukrainian: 'їздити', ukrainianPast: { fem: 'їздила', masc: 'їздив', plural: 'їздили' } },
+      { base: 'fly', pastSimple: 'flew', pastParticiple: 'flown', emoji: '✈️', isRegular: false, level: 'A2', ukrainian: 'літати', ukrainianPast: { fem: 'літала', masc: 'літав', plural: 'літали' } },
+      { base: 'forget', pastSimple: 'forgot', pastParticiple: 'forgotten', emoji: '🤔', isRegular: false, level: 'A2', ukrainian: 'забувати', ukrainianPast: { fem: 'забувала', masc: 'забував', plural: 'забували' } },
+      { base: 'sleep', pastSimple: 'slept', pastParticiple: 'slept', emoji: '😴', isRegular: false, level: 'A1', ukrainian: 'спати', ukrainianPast: { fem: 'спала', masc: 'спав', plural: 'спали' } },
+      { base: 'sing', pastSimple: 'sang', pastParticiple: 'sung', emoji: '🎤', isRegular: false, level: 'A2', ukrainian: 'співати', ukrainianPast: { fem: 'співала', masc: 'співав', plural: 'співали' } },
+      { base: 'swim', pastSimple: 'swam', pastParticiple: 'swum', emoji: '🏊', isRegular: false, level: 'A2', ukrainian: 'плавати', ukrainianPast: { fem: 'плавала', masc: 'плавав', plural: 'плавали' } },
+      { base: 'wake', pastSimple: 'woke', pastParticiple: 'woken', emoji: '⏰', isRegular: false, level: 'A2', ukrainian: 'прокидатися', ukrainianPast: { fem: 'прокидалася', masc: 'прокидався', plural: 'прокидалися' } },
+      { base: 'wear', pastSimple: 'wore', pastParticiple: 'worn', emoji: '👕', isRegular: false, level: 'A2', ukrainian: 'носити', ukrainianPast: { fem: 'носила', masc: 'носив', plural: 'носили' } },
+      { base: 'hide', pastSimple: 'hid', pastParticiple: 'hidden', emoji: '🫣', isRegular: false, level: 'B2', ukrainian: 'ховати', ukrainianPast: { fem: 'ховала', masc: 'ховав', plural: 'ховали' } },
+      { base: 'draw', pastSimple: 'drew', pastParticiple: 'drawn', emoji: '✏️', isRegular: false, level: 'B2', ukrainian: 'малювати', ukrainianPast: { fem: 'малювала', masc: 'малював', plural: 'малювали' } },
+      { base: 'shoot', pastSimple: 'shot', pastParticiple: 'shot', emoji: '🎯', isRegular: false, level: 'B2', ukrainian: 'стріляти', ukrainianPast: { fem: 'стріляла', masc: 'стріляв', plural: 'стріляли' } },
+      { base: 'ride', pastSimple: 'rode', pastParticiple: 'ridden', emoji: '🚴', isRegular: false, level: 'B2', ukrainian: 'їхати', ukrainianPast: { fem: 'їхала', masc: 'їхав', plural: 'їхали' } },
+      { base: 'throw', pastSimple: 'threw', pastParticiple: 'thrown', emoji: '⚾', isRegular: false, level: 'B2', ukrainian: 'кидати', ukrainianPast: { fem: 'кидала', masc: 'кидав', plural: 'кидали' } },
+      { base: 'slide', pastSimple: 'slid', pastParticiple: 'slid', emoji: '🛝', isRegular: false, level: 'B2', ukrainian: 'ковзати', ukrainianPast: { fem: 'ковзала', masc: 'ковзав', plural: 'ковзали' } },
+      { base: 'steal', pastSimple: 'stole', pastParticiple: 'stolen', emoji: '🦹', isRegular: false, level: 'B2', ukrainian: 'красти', ukrainianPast: { fem: 'крала', masc: 'крав', plural: 'крали' } },
+      { base: 'knit', pastSimple: 'knit/knitted', pastParticiple: 'knit/knitted', emoji: '🧶', isRegular: false, level: 'B2', ukrainian: 'в\'язати', ukrainianPast: { fem: 'в\'язала', masc: 'в\'язав', plural: 'в\'язали' } },
+      { base: 'shine', pastSimple: 'shone', pastParticiple: 'shone', emoji: '✨', isRegular: false, level: 'B2', ukrainian: 'світити', ukrainianPast: { fem: 'світила', masc: 'світив', plural: 'світили' } },
+      { base: 'sweep', pastSimple: 'swept', pastParticiple: 'swept', emoji: '🧹', isRegular: false, level: 'B2', ukrainian: 'мести/підмітати', ukrainianPast: { fem: 'мела/підмітала', masc: 'мів/підмітав', plural: 'мели/підмітали' } },
+      { base: 'sink', pastSimple: 'sank', pastParticiple: 'sunk', emoji: '🚢', isRegular: false, level: 'B2', ukrainian: 'тонути', ukrainianPast: { fem: 'тонула', masc: 'тонув', plural: 'тонули' } },
     ];
 
     // ============ STATE ============
@@ -184,14 +184,35 @@
     }
 
     // ============ UTILS ============
+    // Flatten all Ukrainian past forms (fem/masc/plural, each may hold "a/b") into one list
+    function ukrPastForms(up) {
+      if (!up) return [];
+      if (typeof up === 'string') return up.toLowerCase().split('/').map(f => f.trim());
+      return ['fem', 'masc', 'plural']
+        .flatMap(k => (up[k] || '').toLowerCase().split('/'))
+        .map(f => f.trim())
+        .filter(Boolean);
+    }
+
+    // Display string: feminine first, then masculine, then plural
+    function ukrPastDisplay(up) {
+      if (!up) return '';
+      if (typeof up === 'string') return up;
+      const parts = [];
+      if (up.fem) parts.push(up.fem + ' (ж.)');
+      if (up.masc) parts.push(up.masc + ' (ч.)');
+      if (up.plural) parts.push(up.plural + ' (мн.)');
+      return parts.join(' / ');
+    }
+
     function findVerbByAnyForm(searchTerm) {
       const normalized = searchTerm.toLowerCase().trim();
       return irregularVerbs.find(verb => {
         const base = verb.base.toLowerCase() === normalized;
         const past = verb.pastSimple.toLowerCase().split('/').some(f => f.trim() === normalized);
         const participle = verb.pastParticiple.toLowerCase().split('/').some(f => f.trim() === normalized);
-        const ukr = verb.ukrainian && verb.ukrainian.toLowerCase() === normalized;
-        const ukrPast = verb.ukrainianPast && verb.ukrainianPast.toLowerCase() === normalized;
+        const ukr = verb.ukrainian && verb.ukrainian.toLowerCase().split('/').some(f => f.trim() === normalized);
+        const ukrPast = verb.ukrainianPast && ukrPastForms(verb.ukrainianPast).includes(normalized);
         return base || past || participle || ukr || ukrPast;
       });
     }
@@ -374,7 +395,7 @@
                   ${state.searchResult.ukrainianPast ? `
                     <div class="flex justify-between items-center">
                       <span class="text-sm font-medium text-gray-600">Ukrainian (Past):</span>
-                      <span class="text-lg font-semibold accent">${state.searchResult.ukrainianPast}</span>
+                      <span class="text-lg font-semibold accent text-right">${ukrPastDisplay(state.searchResult.ukrainianPast)}</span>
                     </div>
                   ` : ''}
                 </div>
@@ -397,7 +418,7 @@
                       <span class="text-xs bg-gray-300 text-gray-800 px-2 py-1 rounded text-center" style="font-size: 10px; font-weight: 500; letter-spacing: 0.05em;">${v.count}×</span>
                     </div>
                     <div class="text-sm text-gray-700">Past: <span class="accent font-medium">${v.pastSimple}</span></div>
-                    ${v.ukrainian ? `<div class="text-xs text-gray-600 mt-2" style="font-style: italic;">🇺🇦 ${v.ukrainian}${v.ukrainianPast ? `, ${v.ukrainianPast}` : ''}</div>` : ''}
+                    ${v.ukrainian ? `<div class="text-xs text-gray-600 mt-2" style="font-style: italic;">🇺🇦 ${v.ukrainian}${v.ukrainianPast ? `, ${ukrPastDisplay(v.ukrainianPast)}` : ''}</div>` : ''}
                   </div>
                 `).join('')}
               </div>
