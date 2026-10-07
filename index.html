@@ -7,14 +7,67 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { 
+      margin: 0; 
+      font-family: 'Georgia', 'Garamond', serif;
+      background: linear-gradient(135deg, #f5f1ed 0%, #e8e3de 100%);
+      background-attachment: fixed;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
     .hidden { display: none; }
     .modal-open { overflow: hidden; }
+    
+    h1, h2, h3 { 
+      font-family: 'Georgia', serif;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: #2d2416;
+    }
+    
+    .card {
+      background: linear-gradient(135deg, #faf7f2 0%, #f5f0eb 100%);
+      border: 1px solid #d4ccc0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+    
+    input, textarea {
+      background: #fefdfb !important;
+      border: 1px solid #d4ccc0 !important;
+      color: #2d2416 !important;
+    }
+    
+    input:focus, textarea:focus {
+      border-color: #8b7355 !important;
+      box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1) !important;
+    }
+    
+    .accent {
+      color: #6b8e6e;
+    }
+    
+    .stat-box {
+      background: #faf7f2;
+      border: 1px solid #d4ccc0;
+      border-radius: 2px;
+    }
   </style>
 </head>
-<body class="bg-gray-50">
+<body>
   <div id="app"></div>
-
   <script>
     // ============ DATA ============
     const irregularVerbs = [
@@ -94,29 +147,41 @@
     // ============ STATE ============
     let state = {
       mode: 'search',
-      searchTerm: '',
-      searchResult: null,
-      searchHistory: JSON.parse(localStorage.getItem('verbSearchHistory')) || [],
-      gameVerbs: [],
-      currentVerbIndex: 0,
-      userAnswer: '',
-      feedback: null,
-      score: 0,
-      gameStarted: false,
-      gameResults: null,
-      performanceData: JSON.parse(localStorage.getItem('verbPerformanceData')) || {
-        verbStats: {},
-        gameNumber: 0,
-        wrongAnswersQueue: [],
-      },
-      settings: JSON.parse(localStorage.getItem('verbGameSettings')) || {
-        practiceMode: 'mix',
-        verbSet: 'all',
-      },
       showSettings: false,
+      searchInput: '',
+      searchResult: null,
+      searchHistory: [],
+      gameStarted: false,
+      currentVerbIndex: 0,
+      score: 0,
+      gameVerbs: [],
+      feedback: null,
+      gameResults: null,
       showReviewModal: false,
       showStatsModal: null,
+      performanceData: {
+        gameNumber: 0,
+        verbStats: {},
+      },
+      settings: {
+        verbSet: 'top50',
+        practiceMode: 'mixed',
+      }
     };
+
+    // Load state from localStorage
+    function loadState() {
+      const saved = localStorage.getItem('verbMasterState');
+      if (saved) state = { ...state, ...JSON.parse(saved) };
+    }
+
+    function saveState() {
+      localStorage.setItem('verbMasterState', JSON.stringify({
+        searchHistory: state.searchHistory,
+        performanceData: state.performanceData,
+        settings: state.settings,
+      }));
+    }
 
     // ============ UTILS ============
     function findVerbByAnyForm(searchTerm) {
@@ -131,108 +196,78 @@
       });
     }
 
-    function getFormType(verb, searchTerm) {
-      const normalized = searchTerm.toLowerCase().trim();
-      if (verb.base.toLowerCase() === normalized) return 'infinitive';
-      if (verb.pastSimple.toLowerCase().split('/').some(f => f.trim() === normalized)) return 'pastSimple';
-      if (verb.pastParticiple.toLowerCase().split('/').some(f => f.trim() === normalized)) return 'pastParticiple';
-      return 'infinitive';
-    }
-
-    function getTop50() {
-      return irregularVerbs.filter(v => v.commonRank && v.commonRank <= 50);
-    }
-
-    function saveState() {
-      localStorage.setItem('verbSearchHistory', JSON.stringify(state.searchHistory));
-      localStorage.setItem('verbPerformanceData', JSON.stringify(state.performanceData));
-      localStorage.setItem('verbGameSettings', JSON.stringify(state.settings));
-    }
-
-    // ============ EVENTS ============
     function handleSearch() {
-      const term = document.getElementById('searchInput')?.value || '';
-      if (!term.trim()) return;
+      const term = state.searchInput.trim();
+      if (!term) return;
 
-      const verb = findVerbByAnyForm(term);
-      if (verb) {
-        state.searchResult = { ...verb, searchedFormType: getFormType(verb, term) };
-        const idx = state.searchHistory.findIndex(h => h.base === verb.base);
-        if (idx > -1) {
-          state.searchHistory[idx].count += 1;
-          state.searchHistory[idx].lastSearched = new Date().toISOString();
+      const result = findVerbByAnyForm(term);
+      
+      if (result) {
+        state.searchResult = result;
+        
+        // Add to history
+        const existingIdx = state.searchHistory.findIndex(v => v.base === result.base);
+        if (existingIdx !== -1) {
+          state.searchHistory[existingIdx].count += 1;
         } else {
-          state.searchHistory.push({ ...verb, count: 1, lastSearched: new Date().toISOString() });
+          state.searchHistory.push({ ...result, count: 1 });
         }
-        state.searchHistory.sort((a, b) => {
-          if (b.count !== a.count) return b.count - a.count;
-          return new Date(b.lastSearched) - new Date(a.lastSearched);
-        });
+        state.searchHistory = state.searchHistory.sort((a, b) => b.count - a.count);
       } else {
         state.searchResult = { notFound: true };
       }
+      
       saveState();
       render();
     }
 
     function startGame() {
-      const top50 = getTop50();
-      const available = state.settings.verbSet === 'top50' ? top50 : irregularVerbs;
-      const shuffled = [...available].sort(() => Math.random() - 0.5);
-      const selected = shuffled.slice(0, 10);
-
-      state.gameVerbs = selected.map(v => ({
-        ...v,
-        askingFor: state.settings.practiceMode === 'mix' ? 
-          (Math.random() > 0.5 ? 'pastSimple' : 'pastParticiple') :
-          state.settings.practiceMode
-      }));
+      state.gameStarted = true;
       state.currentVerbIndex = 0;
       state.score = 0;
-      state.userAnswer = '';
       state.feedback = null;
-      state.gameStarted = true;
       state.gameResults = null;
-      state.performanceData.gameNumber += 1;
-      saveState();
+      state.showReviewModal = false;
+
+      const allVerbs = state.settings.verbSet === 'all' ? irregularVerbs : irregularVerbs.slice(0, 50);
+      state.gameVerbs = [];
+      
+      for (let i = 0; i < 10; i++) {
+        const verb = allVerbs[Math.floor(Math.random() * allVerbs.length)];
+        state.gameVerbs.push({
+          ...verb,
+          askingFor: state.settings.practiceMode === 'mixed' 
+            ? (Math.random() > 0.5 ? 'pastSimple' : 'pastParticiple')
+            : state.settings.practiceMode
+        });
+      }
+
       render();
-      setTimeout(() => document.getElementById('answerInput')?.focus(), 100);
     }
 
     function checkAnswer() {
-      const answer = (document.getElementById('answerInput')?.value || '').trim();
-      if (!answer) return;
-
       const verb = state.gameVerbs[state.currentVerbIndex];
-      const correct = verb[verb.askingFor].toLowerCase().split('/').map(f => f.trim());
-      const isCorrect = correct.some(f => f === answer.toLowerCase());
+      const inputElem = document.getElementById('answerInput');
+      const userAnswer = inputElem.value.toLowerCase().trim();
+      const correctForms = verb[verb.askingFor].toLowerCase().split('/').map(f => f.trim());
+      const isCorrect = correctForms.includes(userAnswer);
 
       state.feedback = {
         isCorrect,
-        userAnswer: answer,
+        userAnswer: inputElem.value,
         correctAnswer: verb[verb.askingFor],
-        askedFor: verb.askingFor
       };
 
-      if (isCorrect) state.score += 1;
-
+      // Track performance
       if (!state.performanceData.verbStats[verb.base]) {
         state.performanceData.verbStats[verb.base] = { correct: 0, incorrect: 0 };
       }
+
       if (isCorrect) {
+        state.score += 1;
         state.performanceData.verbStats[verb.base].correct += 1;
       } else {
         state.performanceData.verbStats[verb.base].incorrect += 1;
-        if (!state.performanceData.wrongAnswersQueue.includes(verb.base)) {
-          state.performanceData.wrongAnswersQueue.push(verb.base);
-        }
-      }
-
-      if (!state.gameResults) {
-        state.gameResults = { score: isCorrect ? 1 : 0, total: 10, answers: [{ verb, userAnswer: answer, askedFor: verb.askingFor }] };
-      } else {
-        state.gameResults.score += isCorrect ? 1 : 0;
-        state.gameResults.answers.push({ verb, userAnswer: answer, askedFor: verb.askingFor });
       }
 
       saveState();
@@ -240,49 +275,56 @@
     }
 
     function nextQuestion() {
-      if (state.currentVerbIndex + 1 >= 10) {
-        state.gameStarted = false;
-      } else {
+      if (state.currentVerbIndex + 1 < 10) {
         state.currentVerbIndex += 1;
-        state.userAnswer = '';
         state.feedback = null;
+      } else {
+        // Game complete
+        state.gameResults = {
+          score: state.score,
+          total: 10,
+          answers: state.gameVerbs.map((verb, idx) => ({
+            verb,
+            userAnswer: document.querySelector(`[data-answer="${idx}"]`)?.value || 'skipped',
+            askedFor: verb.askingFor,
+          }))
+        };
+        state.performanceData.gameNumber += 1;
+        state.gameStarted = false;
       }
-      saveState();
       render();
-      setTimeout(() => document.getElementById('answerInput')?.focus(), 100);
     }
 
-    // ============ RENDERING ============
+    // ============ RENDER ============
     function render() {
       const app = document.getElementById('app');
-      
-      let html = `
-        <div class="min-h-screen bg-gray-50 flex flex-col">
-          <header class="border-b border-gray-200 bg-white">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div class="flex items-center justify-between h-16 sm:h-20">
-                <div class="flex items-center space-x-3">
-                  <div class="text-2xl sm:text-3xl">📚</div>
-                  <div>
-                    <h1 class="text-lg sm:text-xl font-semibold text-gray-900 tracking-tight">Verb Master</h1>
-                    <p class="text-xs text-gray-500 hidden sm:block">Irregular Past Verbs Practice</p>
-                  </div>
+      const html = `
+        <div class="flex flex-col min-h-screen">
+          <header class="border-b border-gray-400 bg-gradient-to-b from-white to-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 sm:h-20">
+              <div class="flex items-center space-x-4">
+                <div class="text-3xl sm:text-4xl">📚</div>
+                <div>
+                  <h1 class="text-xl sm:text-2xl font-normal text-gray-900 tracking-wide">Verb Master</h1>
+                  <p class="text-xs text-gray-600 hidden sm:block tracking-widest" style="font-size: 11px; letter-spacing: 0.08em;">— Irregular Verbs Practice —</p>
                 </div>
-                <div class="flex space-x-2">
-                  <button onclick="state.mode='search';state.showSettings=false;render()" class="px-4 py-2 text-sm sm:text-base rounded-md transition-all ${state.mode === 'search' ? 'bg-blue-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}">Search</button>
-                  <button onclick="state.mode='game';state.showSettings=false;render()" class="px-4 py-2 text-sm sm:text-base rounded-md transition-all ${state.mode === 'game' ? 'bg-blue-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}">Game</button>
-                </div>
+              </div>
+              <div class="flex space-x-3">
+                <button onclick="state.mode='search';state.showSettings=false;render()" class="px-4 py-2 text-xs tracking-widest font-normal ${state.mode === 'search' ? 'bg-gray-900 text-gray-50 shadow-md' : 'bg-white text-gray-700 border border-gray-400 hover:bg-gray-100'}">SEARCH</button>
+                <button onclick="state.mode='game';state.showSettings=false;render()" class="px-4 py-2 text-xs tracking-widest font-normal ${state.mode === 'game' ? 'bg-gray-900 text-gray-50 shadow-md' : 'bg-white text-gray-700 border border-gray-400 hover:bg-gray-100'}">GAME</button>
               </div>
             </div>
           </header>
+
           <main class="flex-1">
             ${state.mode === 'search' ? renderSearch() : renderGame()}
           </main>
-          <footer class="border-t border-gray-200 bg-white py-4 mt-8">
+
+          <footer class="border-t border-gray-400 py-6 mt-12" style="background: linear-gradient(135deg, #faf7f2 0%, #f5f0eb 100%);">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-              <p class="text-center text-sm text-gray-600">
+              <p class="text-center text-sm text-gray-700 tracking-wide" style="letter-spacing: 0.05em; font-size: 12px;">
                 © ${new Date().getFullYear()} All rights reserved by 
-                <a href="https://www.instagram.com/mariy.bandura" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-700 font-medium transition-colors hover:underline">Mariya Bandura</a>
+                <a href="https://www.instagram.com/mariy.bandura" target="_blank" rel="noopener noreferrer" class="accent hover:text-gray-800 font-medium transition-colors hover:underline">Mariya Bandura</a>
               </p>
             </div>
           </footer>
@@ -297,17 +339,18 @@
     function renderSearch() {
       return `
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-4xl">
-          <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-8 mb-8">
-            <h2 class="text-xl sm:text-2xl font-semibold mb-6 text-gray-900">Search Verb</h2>
+          <div class="card rounded p-6 sm:p-8 mb-8">
+            <h2 class="text-2xl sm:text-3xl font-normal mb-8 text-gray-900 tracking-wide">Search Verb</h2>
             <div class="flex flex-col sm:flex-row gap-3">
               <div class="relative flex-1">
-                <input type="text" id="searchInput" placeholder="Enter verb in English or Ukrainian (e.g., go, went, йти)" class="w-full pl-10 h-12 text-base border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="if(event.key==='Enter') handleSearch()">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                <input type="text" id="searchInput" placeholder="Enter verb in English or Ukrainian (e.g., go, went, йти)" value="${state.searchInput}" onkeypress="if(event.key==='Enter') { state.searchInput=this.value; handleSearch(); }" class="w-full pl-10 h-12 text-base border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-gray-800">
               </div>
-              <button onclick="handleSearch()" class="h-12 px-6 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">Search</button>
+              <button onclick="state.searchInput=document.getElementById('searchInput').value; handleSearch()" class="h-12 px-6 bg-gray-900 text-gray-50 rounded hover:bg-gray-800 transition-all font-normal tracking-wide text-sm">Search</button>
             </div>
             ${state.searchResult ? (state.searchResult.notFound ? 
               `<div class="mt-6 bg-red-50 text-red-600 p-4 rounded-lg text-center">Irregular verb not found.</div>` :
-              `<div class="mt-6 bg-blue-50 p-6 rounded-lg text-center">
+              `<div class="mt-6 bg-gray-100 p-6 rounded-lg text-center">
                 <div class="text-6xl mb-4">${state.searchResult.emoji}</div>
                 <div class="space-y-3">
                   <div class="flex justify-between items-center">
@@ -323,38 +366,38 @@
                     <span class="text-lg font-semibold text-gray-900">${state.searchResult.pastParticiple}</span>
                   </div>
                   ${state.searchResult.ukrainian ? `
-                    <div class="flex justify-between items-center pt-3 border-t border-blue-200">
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-300">
                       <span class="text-sm font-medium text-gray-600">Ukrainian (Infinitive):</span>
-                      <span class="text-lg font-semibold text-blue-700">${state.searchResult.ukrainian}</span>
+                      <span class="text-lg font-semibold accent">${state.searchResult.ukrainian}</span>
                     </div>
                   ` : ''}
                   ${state.searchResult.ukrainianPast ? `
                     <div class="flex justify-between items-center">
                       <span class="text-sm font-medium text-gray-600">Ukrainian (Past):</span>
-                      <span class="text-lg font-semibold text-blue-700">${state.searchResult.ukrainianPast}</span>
+                      <span class="text-lg font-semibold accent">${state.searchResult.ukrainianPast}</span>
                     </div>
                   ` : ''}
                 </div>
               </div>`) : ''}
           </div>
           ${state.searchHistory.length > 0 ? `
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-8">
+            <div class="card rounded p-6 sm:p-8">
               <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">Search History</h2>
-                <button onclick="state.searchHistory=[];saveState();render()" class="text-gray-500 hover:text-red-600 transition-all flex items-center text-sm">Clear</button>
+                <h2 class="text-2xl sm:text-3xl font-normal text-gray-900 tracking-wide">Search History</h2>
+                <button onclick="state.searchHistory=[];saveState();render()" class="text-gray-600 hover:text-gray-900 transition-all flex items-center text-sm tracking-wide">Clear</button>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 ${state.searchHistory.map(v => `
-                  <div class="bg-gray-50 p-4 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all">
+                  <div class="stat-box p-4 hover:shadow-md transition-all">
                     <div class="flex items-center justify-between mb-2">
                       <div class="flex items-center space-x-3">
                         <span class="text-3xl">${v.emoji}</span>
-                        <span class="font-semibold text-gray-900">${v.base}</span>
+                        <span class="font-normal text-gray-900">${v.base}</span>
                       </div>
-                      <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">${v.count}x</span>
+                      <span class="text-xs bg-gray-300 text-gray-800 px-2 py-1 rounded text-center" style="font-size: 10px; font-weight: 500; letter-spacing: 0.05em;">${v.count}×</span>
                     </div>
-                    <div class="text-sm text-gray-600">Past: <span class="text-blue-600 font-medium">${v.pastSimple}</span></div>
-                    ${v.ukrainian ? `<div class="text-xs text-gray-500 mt-2">🇺🇦 ${v.ukrainian}${v.ukrainianPast ? `, ${v.ukrainianPast}` : ''}</div>` : ''}
+                    <div class="text-sm text-gray-700">Past: <span class="accent font-medium">${v.pastSimple}</span></div>
+                    ${v.ukrainian ? `<div class="text-xs text-gray-600 mt-2" style="font-style: italic;">🇺🇦 ${v.ukrainian}${v.ukrainianPast ? `, ${v.ukrainianPast}` : ''}</div>` : ''}
                   </div>
                 `).join('')}
               </div>
@@ -373,9 +416,9 @@
         return `
           <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-2xl">
             ${!state.showSettings ? `
-              <button onclick="state.showSettings=true;render()" class="mb-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all text-sm flex items-center">⚙️ Game Settings</button>
+              <button onclick="state.showSettings=true;render()" class="mb-4 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-all text-sm flex items-center tracking-wide font-normal">⚙️ Game Settings</button>
             ` : `
-              <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
+              <div class="card rounded p-6 mb-6">
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="text-lg font-semibold text-gray-900">Game Settings</h3>
                   <button onclick="state.showSettings=false;render()" class="text-gray-500 hover:text-gray-700">✕</button>
@@ -383,98 +426,51 @@
                 <div class="mb-6">
                   <label class="text-sm font-medium text-gray-900 mb-3 block">Practice Mode</label>
                   <div class="space-y-2">
-                    ${[
-                      { value: 'mix', label: 'Mixed (2nd & 3rd forms)', desc: 'Random selection' },
-                      { value: 'pastSimple', label: 'Past Simple (2nd form)', desc: 'Example: I went yesterday' },
-                      { value: 'pastParticiple', label: 'Past Participle (3rd form)', desc: 'Example: I have gone' }
-                    ].map(opt => `
-                      <button onclick="state.settings.practiceMode='${opt.value}';saveState();render()" class="w-full text-left p-3 rounded-lg border transition-all ${state.settings.practiceMode === opt.value ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:bg-gray-50'}">
-                        <div class="font-medium text-gray-900 text-sm">${opt.label}</div>
-                        <div class="text-xs text-gray-500 mt-1">${opt.desc}</div>
-                      </button>
-                    `).join('')}
+                    ${['mixed', 'pastSimple', 'pastParticiple'].map(opt => {
+                      const labels = { mixed: 'Mixed (Random)', pastSimple: 'Past Simple Only', pastParticiple: 'Past Participle Only' };
+                      return `<button onclick="state.settings.practiceMode='${opt}';saveState();render()" class="w-full text-left p-3 rounded-lg border transition-all ${state.settings.practiceMode === opt ? 'border-gray-900 bg-gray-100' : 'border-gray-300 bg-white hover:bg-gray-50'}">${labels[opt]}</button>`;
+                    }).join('')}
                   </div>
                 </div>
-                <div>
-                  <label class="text-sm font-medium text-gray-900 mb-3 block">Verb Selection</label>
+                <div class="mb-6">
+                  <label class="text-sm font-medium text-gray-900 mb-3 block">Verb Set</label>
                   <div class="space-y-2">
-                    ${[
-                      { value: 'top50', label: '50 Most Common Verbs', desc: 'Focus on essential vocabulary' },
-                      { value: 'all', label: 'All Irregular Verbs (250+)', desc: 'Comprehensive practice' }
-                    ].map(opt => `
-                      <button onclick="state.settings.verbSet='${opt.value}';saveState();render()" class="w-full text-left p-3 rounded-lg border transition-all ${state.settings.verbSet === opt.value ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:bg-gray-50'}">
-                        <div class="font-medium text-gray-900 text-sm">${opt.label}</div>
-                        <div class="text-xs text-gray-500 mt-1">${opt.desc}</div>
-                      </button>
-                    `).join('')}
+                    ${['top50', 'all'].map(opt => {
+                      const labels = { top50: 'Top 50 Verbs', all: 'All 75+ Verbs' };
+                      return `<button onclick="state.settings.verbSet='${opt}';saveState();render()" class="w-full text-left p-3 rounded-lg border transition-all ${state.settings.verbSet === opt ? 'border-gray-900 bg-gray-100' : 'border-gray-300 bg-white hover:bg-gray-50'}">${labels[opt]}</button>`;
+                    }).join('')}
                   </div>
                 </div>
               </div>
             `}
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8 sm:p-12 text-center">
-              ${state.currentVerbIndex === 0 ? `
-                <div class="text-6xl mb-4">🏆</div>
-                <h2 class="text-2xl sm:text-3xl font-semibold mb-3 text-gray-900">Ready to Play?</h2>
-                <p class="text-gray-600 text-base sm:text-lg max-w-md mx-auto mb-8">You'll see an emoji and the infinitive (1st form) of a verb. Guess either the Past Simple (2nd form) or Past Participle (3rd form) - we'll tell you which one!</p>
-                ${(totalCorrect > 0 || totalIncorrect > 0) ? `
-                  <div class="mb-6 p-6 bg-gray-50 rounded-lg">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Your Stats</h3>
-                    <div class="grid grid-cols-3 gap-4 text-sm mb-4">
-                      <button onclick="state.showStatsModal='correct';render()" class="p-3 bg-white rounded-lg hover:shadow-md transition-all cursor-pointer">
-                        <div class="text-2xl font-bold text-green-600">${totalCorrect}</div>
-                        <div class="text-xs text-gray-600">Correct</div>
-                      </button>
-                      <button onclick="state.showStatsModal='incorrect';render()" class="p-3 bg-white rounded-lg hover:shadow-md transition-all cursor-pointer">
-                        <div class="text-2xl font-bold text-red-600">${totalIncorrect}</div>
-                        <div class="text-xs text-gray-600">Incorrect</div>
-                      </button>
-                      <div class="p-3 bg-white rounded-lg">
-                        <div class="text-2xl font-bold text-blue-600">${state.performanceData.gameNumber}</div>
-                        <div class="text-xs text-gray-600">Games</div>
-                      </div>
-                    </div>
-                    ${state.performanceData.wrongAnswersQueue.length > 0 ? `
-                      <button onclick="state.showStatsModal='toReview';render()" class="flex items-center justify-center space-x-2 mx-auto text-blue-600 hover:text-blue-700 text-sm">
-                        🎯 <span>${state.performanceData.wrongAnswersQueue.length} verbs to review</span>
-                      </button>
-                    ` : ''}
-                  </div>
-                ` : ''}
-                <div class="space-y-3">
-                  <button onclick="startGame()" class="w-full px-8 h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all font-medium">Start Game</button>
-                  ${state.gameResults ? `<button onclick="state.showReviewModal=true;render()" class="w-full px-8 h-12 text-base bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Review Answers</button>` : ''}
-                </div>
-              ` : `
-                <div class="text-6xl mb-4">🏆</div>
-                <h2 class="text-2xl sm:text-3xl font-semibold mb-3 text-gray-900">Game Complete!</h2>
-                <p class="text-lg text-gray-600 mb-6">Your Score:</p>
-                <div class="text-5xl sm:text-6xl font-bold text-blue-600 mb-2">${state.score}/10</div>
-                <p class="text-gray-600 mb-8">${state.score === 10 ? 'Perfect!' : state.score >= 7 ? 'Great job!' : 'Keep practicing!'}</p>
-                ${(totalCorrect + totalIncorrect) > 0 ? `
-                  <div class="mb-8 p-6 bg-gray-50 rounded-lg">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Total Progress</h3>
-                    <div class="grid grid-cols-3 gap-4 text-sm">
-                      <button onclick="state.showStatsModal='correct';render()" class="p-3 bg-white rounded-lg hover:shadow-md transition-all cursor-pointer">
-                        <div class="text-2xl font-bold text-green-600">${totalCorrect}</div>
-                        <div class="text-xs text-gray-600">All Time Correct</div>
-                      </button>
-                      <div class="p-3 bg-white rounded-lg">
-                        <div class="text-2xl font-bold text-blue-600">${state.performanceData.gameNumber}</div>
-                        <div class="text-xs text-gray-600">Total Games</div>
-                      </div>
-                      <div class="p-3 bg-white rounded-lg">
-                        <div class="text-2xl font-bold text-blue-600">${accuracy}%</div>
-                        <div class="text-xs text-gray-600">Accuracy</div>
-                      </div>
-                    </div>
-                  </div>
-                ` : ''}
-                <div class="space-y-3">
-                  <button onclick="state.showReviewModal=true;render()" class="w-full px-8 h-12 text-base bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Review Answers</button>
-                  <button onclick="startGame()" class="w-full px-8 h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all flex items-center justify-center font-medium">↻ Play Again</button>
-                </div>
-              `}
+
+            <div class="card rounded p-6 sm:p-8 mb-8">
+              <div class="text-center">
+                <h2 class="text-3xl sm:text-4xl font-normal text-gray-900 mb-4">Ready to Play?</h2>
+                <p class="text-gray-600 mb-6">Test your knowledge of irregular verbs</p>
+                <button onclick="startGame()" class="w-full px-8 h-12 text-base bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-all font-medium">Start Game</button>
+              </div>
             </div>
+
+            ${state.performanceData.gameNumber > 0 ? `
+              <div class="card rounded p-6 sm:p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Your Statistics</h3>
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="stat-box p-4 text-center">
+                    <div class="text-2xl font-bold accent">${state.performanceData.gameNumber}</div>
+                    <div class="text-xs text-gray-600 mt-2">Games Played</div>
+                  </div>
+                  <div class="stat-box p-4 text-center">
+                    <div class="text-2xl font-bold accent">${totalCorrect}</div>
+                    <div class="text-xs text-gray-600 mt-2">Correct</div>
+                  </div>
+                  <div class="stat-box p-4 text-center">
+                    <div class="text-2xl font-bold accent">${accuracy}%</div>
+                    <div class="text-xs text-gray-600 mt-2">Accuracy</div>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
           </div>
         `;
       } else {
@@ -487,32 +483,34 @@
               <div class="flex justify-between items-center mb-3">
                 <span class="text-sm font-medium text-gray-600">Question ${state.currentVerbIndex + 1} of 10</span>
                 <div class="flex items-center space-x-4">
-                  <span class="text-sm font-semibold text-blue-600">Score: ${state.score}/${state.currentVerbIndex}</span>
+                  <span class="text-sm font-semibold accent">Score: ${state.score}/${state.currentVerbIndex}</span>
                   <button onclick="state.gameStarted=false;state.currentVerbIndex=0;render()" class="text-red-600 hover:text-red-700 text-sm">Exit</button>
                 </div>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
+                <div class="bg-gray-900 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
               </div>
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8 sm:p-12">
+            <div class="card rounded p-8 sm:p-12">
               <div class="text-center mb-8">
-                <div class="mb-4" style="font-size: 120px">${verb.emoji}</div>
+                <div class="text-6xl mb-4">${verb.emoji}</div>
                 <div class="mb-4">
-                  <span class="text-lg px-4 py-2 mb-3 bg-blue-600 text-white rounded-md inline-block">Infinitive: ${verb.base}</span>
+                  <span class="text-lg px-4 py-2 mb-3 bg-gray-900 text-white rounded-md inline-block">Infinitive: ${verb.base}</span>
                 </div>
                 <h3 class="text-lg sm:text-xl font-normal text-gray-900 mb-2">What's the ${verb.askingFor === 'pastSimple' ? 'Past Simple (2nd form)' : 'Past Participle (3rd form)'}?</h3>
                 <p class="text-gray-500 text-sm">${verb.askingFor === 'pastSimple' ? 'Example: I ____ yesterday' : 'Example: I have ____'}</p>
               </div>
               ${!state.feedback ? `
                 <div class="space-y-4">
-                  <input type="text" id="answerInput" placeholder="Type your answer..." class="w-full h-12 text-base text-center border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="if(event.key==='Enter'&&!state.feedback) { event.preventDefault(); checkAnswer(); }">
-                  <button onclick="checkAnswer()" class="w-full h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">Check Answer</button>
+                  <input type="text" id="answerInput" placeholder="Type your answer..." class="w-full h-12 text-base text-center border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-gray-800" onkeypress="if(event.key==='Enter'&&!state.feedback) { event.preventDefault(); checkAnswer(); }">
+                  <button onclick="checkAnswer()" class="w-full h-12 text-base bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-all">Check Answer</button>
                 </div>
               ` : `
                 <div class="space-y-6">
                   <div class="p-6 rounded-lg text-center ${state.feedback.isCorrect ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}">
-                    <div class="flex items-center justify-center mb-3" style="font-size: 32px">${state.feedback.isCorrect ? '✓' : '✕'}</div>
+                    <div class="flex items-center justify-center mb-3">
+                      <span class="text-4xl">${state.feedback.isCorrect ? '✓' : '✕'}</span>
+                    </div>
                     <p class="text-lg font-semibold mb-2">${state.feedback.isCorrect ? 'Correct!' : 'Incorrect'}</p>
                     ${!state.feedback.isCorrect ? `
                       <div class="text-sm">
@@ -521,7 +519,7 @@
                       </div>
                     ` : ''}
                   </div>
-                  <button onclick="nextQuestion()" class="w-full h-12 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">${state.currentVerbIndex + 1 >= 10 ? 'View Results' : 'Next Question'}</button>
+                  <button id="nextButtonRef" onclick="nextQuestion()" class="w-full h-12 text-base bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-all">${state.currentVerbIndex + 1 >= 10 ? 'View Results' : 'Next Question'}</button>
                 </div>
               `}
             </div>
@@ -532,11 +530,15 @@
 
     function renderReviewModal() {
       return `
-        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target===this) { state.showReviewModal=false; render(); }">
-          <div class="w-full max-w-3xl bg-white rounded-xl shadow-2xl flex flex-col" style="maxHeight: 600px" onclick="event.stopPropagation()">
-            <div class="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
-              <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 text-center">Review Your Answers</h2>
-              <p class="text-center text-gray-600 text-sm mt-1">Final Score: ${state.gameResults.score}/${state.gameResults.total}</p>
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target===this) { state.showReviewModal=false; render(); }">
+          <div class="w-full max-w-3xl card rounded flex flex-col shadow-2xl" style="maxHeight: 600px" onclick="event.stopPropagation()">
+            <div class="p-4 sm:p-6 border-b border-gray-300 flex-shrink-0">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                  <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Review Your Answers</h2>
+                </div>
+                <button onclick="state.showReviewModal=false;render()" class="text-gray-400 hover:text-gray-600 transition-colors">✕</button>
+              </div>
             </div>
             <div class="p-4 sm:p-6 overflow-y-auto flex-1">
               <div class="space-y-3">
@@ -547,13 +549,13 @@
                     <div class="p-3 sm:p-4 rounded-lg border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
                       <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center space-x-3">
-                          <span style="font-size: 28px">${ans.verb.emoji}</span>
+                          <span class="text-2xl">${ans.verb.emoji}</span>
                           <div>
                             <span class="font-semibold text-gray-900 text-base sm:text-lg">${ans.verb.base}</span>
                             <span class="ml-2 text-xs bg-white px-2 py-1 rounded">${ans.verb.level}</span>
                           </div>
                         </div>
-                        <span style="font-size: 20px">${isCorrect ? '✓' : '✕'}</span>
+                        <span class="text-xl">${isCorrect ? '✓' : '✕'}</span>
                       </div>
                       <div class="text-sm space-y-1">
                         <div class="text-gray-700"><strong>Asked for:</strong> ${ans.askedFor === 'pastSimple' ? 'Past Simple' : 'Past Participle'}</div>
@@ -565,7 +567,7 @@
                 }).join('')}
               </div>
             </div>
-            <div class="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+            <div class="p-4 sm:p-6 border-t border-gray-300 bg-gray-100 flex-shrink-0">
               <button onclick="state.showReviewModal=false;render()" class="w-full h-10 sm:h-12 text-sm sm:text-base font-medium bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Go Back</button>
             </div>
           </div>
@@ -574,35 +576,27 @@
     }
 
     function renderStatsModal() {
+      const titles = { toReview: 'Verbs to Review', correct: 'Verbs You Got Correct', incorrect: 'Verbs You Got Incorrect' };
+      
       let verbs = [];
-      if (state.showStatsModal === 'toReview') {
-        verbs = state.performanceData.wrongAnswersQueue.map(b => irregularVerbs.find(v => v.base === b)).filter(v => v);
-      } else if (state.showStatsModal === 'correct') {
+      if (state.showStatsModal === 'correct') {
         verbs = Object.entries(state.performanceData.verbStats)
-          .filter(([_, st]) => st.correct > 0)
           .map(([b, st]) => ({ ...irregularVerbs.find(v => v.base === b), correctCount: st.correct }))
           .filter(v => v.base)
           .sort((a, b) => b.correctCount - a.correctCount);
       } else if (state.showStatsModal === 'incorrect') {
         verbs = Object.entries(state.performanceData.verbStats)
-          .filter(([_, st]) => st.incorrect > 0)
           .map(([b, st]) => ({ ...irregularVerbs.find(v => v.base === b), incorrectCount: st.incorrect }))
           .filter(v => v.base)
           .sort((a, b) => b.incorrectCount - a.incorrectCount);
       }
 
-      const titles = { toReview: 'Verbs to Review', correct: 'Verbs You Got Correct', incorrect: 'Verbs You Got Incorrect' };
-      const icons = { toReview: '🎯', correct: '✓', incorrect: '✕' };
-
       return `
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target===this) { state.showStatsModal=null; render(); }">
-          <div class="w-full max-w-3xl bg-white rounded-xl shadow-2xl flex flex-col" style="maxHeight: 600px" onclick="event.stopPropagation()">
-            <div class="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+          <div class="w-full max-w-3xl card rounded flex flex-col shadow-2xl" style="maxHeight: 600px" onclick="event.stopPropagation()">
+            <div class="p-4 sm:p-6 border-b border-gray-300 flex-shrink-0">
               <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                  <span style="font-size: 24px">${icons[state.showStatsModal]}</span>
-                  <h2 class="text-lg sm:text-xl font-semibold text-gray-900">${titles[state.showStatsModal]}</h2>
-                </div>
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-900">${titles[state.showStatsModal]}</h2>
                 <button onclick="state.showStatsModal=null;render()" class="text-gray-400 hover:text-gray-600 transition-colors">✕</button>
               </div>
             </div>
@@ -614,10 +608,10 @@
               ` : `
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   ${verbs.map(v => `
-                    <div class="p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-all">
+                    <div class="p-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 transition-all">
                       <div class="flex items-start justify-between mb-2">
                         <div class="flex items-center space-x-2">
-                          <span style="font-size: 24px">${v.emoji}</span>
+                          <span class="text-xl">${v.emoji}</span>
                           <div>
                             <div class="flex items-center space-x-2">
                               <span class="font-semibold text-gray-900">${v.base}</span>
@@ -634,7 +628,7 @@
                 </div>
               `}
             </div>
-            <div class="p-4 sm:p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+            <div class="p-4 sm:p-6 border-t border-gray-300 bg-gray-100 flex-shrink-0">
               <button onclick="state.showStatsModal=null;render()" class="w-full h-10 sm:h-12 text-sm sm:text-base font-medium bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-all">Go Back</button>
             </div>
           </div>
@@ -642,7 +636,7 @@
       `;
     }
 
-    // Initialize
+    loadState();
     render();
   </script>
 </body>
