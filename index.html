@@ -75,7 +75,7 @@
       { base: 'have', pastSimple: 'had', pastParticiple: 'had', emoji: '🤲', isRegular: false, commonRank: 2, level: 'A1', ukrainian: 'мати', ukrainianPast: { fem: 'мала', masc: 'мав', plural: 'мали' } },
       { base: 'do', pastSimple: 'did', pastParticiple: 'done', emoji: '✔️', isRegular: false, commonRank: 3, level: 'A1', ukrainian: 'робити', ukrainianPast: { fem: 'робила', masc: 'робив', plural: 'робили' } },
       { base: 'say', pastSimple: 'said', pastParticiple: 'said', emoji: '💬', isRegular: false, commonRank: 4, level: 'A1', ukrainian: 'казати', ukrainianPast: { fem: 'казала', masc: 'казав', plural: 'казали' } },
-      { base: 'go', pastSimple: 'went', pastParticiple: 'gone', emoji: '🚀', isRegular: false, commonRank: 5, level: 'A1', ukrainian: 'йти/піти', ukrainianPast: { fem: 'йшла/пішла', masc: 'йшов/пішов', plural: 'йшли/пішли' } },
+      { base: 'go', pastSimple: 'went', pastParticiple: 'gone', emoji: '🚀', isRegular: false, commonRank: 5, level: 'A1', ukrainian: 'йти/іти/піти', ukrainianPast: { fem: 'йшла/пішла', masc: 'йшов/пішов', plural: 'йшли/пішли' } },
       { base: 'get', pastSimple: 'got', pastParticiple: 'got/gotten', emoji: '🎁', isRegular: false, commonRank: 6, level: 'A1', ukrainian: 'отримувати', ukrainianPast: { fem: 'отримувала', masc: 'отримував', plural: 'отримували' } },
       { base: 'make', pastSimple: 'made', pastParticiple: 'made', emoji: '🛠️', isRegular: false, commonRank: 7, level: 'A1', ukrainian: 'робити', ukrainianPast: { fem: 'робила', masc: 'робив', plural: 'робили' } },
       { base: 'know', pastSimple: 'knew', pastParticiple: 'known', emoji: '🧠', isRegular: false, commonRank: 8, level: 'A1', ukrainian: 'знати', ukrainianPast: { fem: 'знала', masc: 'знав', plural: 'знали' } },
@@ -189,8 +189,8 @@
       if (!up) return [];
       if (typeof up === 'string') return up.toLowerCase().split('/').map(f => f.trim());
       return ['fem', 'masc', 'plural']
-        .flatMap(k => (up[k] || '').toLowerCase().split('/'))
-        .map(f => f.trim())
+        .flatMap(k => (up[k] || '').split('/'))
+        .map(f => f.toLowerCase().trim())
         .filter(Boolean);
     }
 
@@ -205,16 +205,42 @@
       return parts.join(' / ');
     }
 
+    // Normalise input: NFC, lowercase, trim, unify apostrophes,
+    // and map Latin look-alike letters onto their Cyrillic twins
+    // (a keyboard slip like "iти" with a Latin i should still match "йти").
+    const LOOKALIKE = { 'i':'і', 'a':'а', 'e':'е', 'o':'о', 'c':'с', 'y':'у', 'x':'х', 'p':'р', 'k':'к', 'm':'м', 't':'т', 'h':'н', 'b':'в' };
+    function norm(s) {
+      if (!s) return '';
+      let t = s.normalize('NFC').toLowerCase().trim();
+      t = t.replace(/[\u2018\u2019\u02BC\u0060\u00B4]/g, "'");
+      // only remap when the string already contains Cyrillic
+      if (/[\u0400-\u04FF]/.test(t)) {
+        t = t.split('').map(ch => LOOKALIKE[ch] || ch).join('');
+      }
+      return t;
+    }
+
+    function allForms(verb) {
+      return [
+        ...verb.base.split('/'),
+        ...verb.pastSimple.split('/'),
+        ...verb.pastParticiple.split('/'),
+        ...(verb.ukrainian ? verb.ukrainian.split('/') : []),
+        ...ukrPastForms(verb.ukrainianPast),
+      ].map(norm).filter(Boolean);
+    }
+
     function findVerbByAnyForm(searchTerm) {
-      const normalized = searchTerm.toLowerCase().trim();
-      return irregularVerbs.find(verb => {
-        const base = verb.base.toLowerCase() === normalized;
-        const past = verb.pastSimple.toLowerCase().split('/').some(f => f.trim() === normalized);
-        const participle = verb.pastParticiple.toLowerCase().split('/').some(f => f.trim() === normalized);
-        const ukr = verb.ukrainian && verb.ukrainian.toLowerCase().split('/').some(f => f.trim() === normalized);
-        const ukrPast = verb.ukrainianPast && ukrPastForms(verb.ukrainianPast).includes(normalized);
-        return base || past || participle || ukr || ukrPast;
-      });
+      const q = norm(searchTerm);
+      if (!q) return undefined;
+      // exact match on any form
+      const exact = irregularVerbs.find(v => allForms(v).includes(q));
+      if (exact) return exact;
+      // fallback: a form that starts with the query (at least 3 chars typed)
+      if (q.length >= 3) {
+        return irregularVerbs.find(v => allForms(v).some(f => f.startsWith(q)));
+      }
+      return undefined;
     }
 
     function handleSearch() {
